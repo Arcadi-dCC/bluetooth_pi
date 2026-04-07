@@ -1,8 +1,8 @@
 #include <Arduino.h>
-#include <platformTypes.h>
+#include <menu.h>
 
 void setup() {
-  
+    menu::config();
 }
 
 void loop() {

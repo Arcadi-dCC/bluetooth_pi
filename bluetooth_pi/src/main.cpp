@@ -2,7 +2,7 @@
 #include <menu.h>
 
 void setup() {
-    menu::config();
+    menu::init();
 }
 
 void loop() {

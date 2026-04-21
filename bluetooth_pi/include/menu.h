@@ -4,8 +4,9 @@
 #include <platformTypes.h>
 
 namespace menu{
-    void config(void);
+    void init(void);
     void stateMgr(void);
+    void fun(void);
 };
 
 #endif //MENU_H_

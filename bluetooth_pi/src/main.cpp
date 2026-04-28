@@ -1,29 +1,34 @@
 #include <Arduino.h>
-#include <platformTypes.h>
-/*void setup() {
-  
-}
-
-void loop() {
-  
-}*/
-/*
-* Arduino Uno with nRF24L01 
-*                
-* by jbalagiya
-* 
-* Library: TMRh20/RF24, https://github.com/tmrh20/RF24/
-*/
 #include "RF24.h"
+#include <SPI.h>
 
-RF24 radio(9, 10); // CE, CSN pins for NRF24L01
+#define MY_MISO 13
+#define MY_MOSI 11
+#define MY_SCLK 12
+#define MY_SS   10  // pass MY_SS as the csn_pin parameter to the RF24 constructor
+
+// notice these pin numbers are not the same used in the library examples
+RF24 radio(9, 10); // the (ce_pin, csn_pin) connected to the radio
+
+SPIClass* hspi = nullptr; // we'll instantiate this in the `setup()` function
+// by default the HSPI bus pre-defines the following pins
+// HSPI_MISO = 12
+// HSPI_MOSI = 13
+// HSPI_SCLK = 14
+// HSPI_SS   = 15
 
 byte i = 45;  // Initial channel for nRF24L01
 unsigned int flag = 0;  // Flag to control channel hopping direction
 
 void setup() {
   Serial.begin(115200); // Initialize serial communication
- if (radio.begin()) {
+  delay(800);
+  Serial.println("Serial COM Enabled");
+  hspi = new SPIClass(); // by default VSPI is used
+  hspi->begin(MY_SCLK, MY_MISO, MY_MOSI, MY_SS);
+  //hspi->begin();
+
+ if (radio.begin(hspi)) {
     delay(200);
     Serial.println("Radio Initialized!");
     radio.setAutoAck(false);       // Disable automatic acknowledgment
@@ -45,6 +50,8 @@ void loop() {
   // Sweep through all channels (0 to 79)
    for (int i = 0; i < 79; i++) {
     radio.setChannel(i);
+    //Serial.println("Jamming channel:");
+    //Serial.println(i);
    }
     // Specifically target BLE advertising channels (37, 38, 39)
   byte ble_channels[] = {37, 38, 39};

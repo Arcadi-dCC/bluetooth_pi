@@ -6,6 +6,22 @@
 
 namespace buttons{
 
-}; //anmespace buttons
+    enum Input{
+        ESQ_CURT,
+        ESQ_LLARG,
+        ESQ_SOLTAR,
+        DRE_CURT,
+        DRE_LLARG,
+        TIMER,
+
+        TOTAL_INPUTS,
+        RES
+    };
+
+    extern volatile Input input;
+
+    void init(void);
+
+}; //namespace buttons
 
 #endif //buttons_H

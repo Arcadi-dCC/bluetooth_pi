@@ -1,8 +1,10 @@
 #ifndef clock_H
 #define clock_H
 
+#include <platformTypes.h>
+
 namespace clocks{
-    void init(void);
+    uint8 init(void);
     void timeMgr(void);
 };
 

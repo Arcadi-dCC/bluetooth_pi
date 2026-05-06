@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include <bluetooth.h>
+#include <buttons.h>
 
 void setup() {
   Serial.begin(115200); // Initialize serial communication
@@ -11,6 +12,9 @@ void setup() {
       Serial.println("Failed to initialize radio!");
       for(;;);
   }
+
+  buttons::init();
+  
 }
 
 void loop() {

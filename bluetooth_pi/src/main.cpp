@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include <bluetooth.h>
+#include <clocks.h>
 
 void setup() {
   Serial.begin(115200); // Initialize serial communication
@@ -8,12 +9,19 @@ void setup() {
 
   if(bluetooth::init())
   {
-      Serial.println("Failed to initialize radio!");
+      Serial.println("Failed to initialize bluetooth!");
+      for(;;);
+  }
+
+  if(clocks::init())
+  {
+    Serial.println("Failed to initialize clock timer!");
       for(;;);
   }
 }
 
 void loop() {
+    clocks::timeMgr();
     bluetooth::inhibir = true;
     bluetooth::inhibEsp();
 }

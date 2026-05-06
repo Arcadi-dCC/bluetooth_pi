@@ -1,11 +1,19 @@
 #include <Arduino.h>
-#include <platformTypes.h>
-#include <clocks.h>
+#include <bluetooth.h>
 
 void setup() {
-    clocks::init();
+  Serial.begin(115200); // Initialize serial communication
+  delay(800);
+  Serial.println("Serial COM Enabled");
+
+  if(bluetooth::init())
+  {
+      Serial.println("Failed to initialize radio!");
+      for(;;);
+  }
 }
 
 void loop() {
-    clocks::timeMgr();
+    bluetooth::inhibir = true;
+    bluetooth::inhibEsp();
 }

@@ -47,6 +47,8 @@ namespace bluetooth{
         radio.printPrettyDetails();    // Print radio details for debugging
         radio.startConstCarrier(RF24_PA_MAX, i);  // Start continuous carrier with specified channel
 
+        inhibir = false;
+
         return 0;
     }
 
@@ -72,7 +74,3 @@ namespace bluetooth{
     }
 
 }; //namespace bluetooth
-
-
-
-

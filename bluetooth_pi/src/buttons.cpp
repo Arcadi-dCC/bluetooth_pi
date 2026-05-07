@@ -1,161 +1,179 @@
 #include <buttons.h>
 #include <Arduino.h>
 
+#define L_BTN_PIN 6
+#define R_BTN_PIN 2
+
+#define DEBOUNCE_TIME 50e3 //us
+#define SORT_TIME 2e6 //us
+
 namespace buttons{
 
-    volatile Input input;
+    volatile hw_timer_t *timer_0 = NULL;
 
-    volatile bool ms100_flag = false;
-    volatile bool button_flag = false;
-    volatile bool s3_flag = false;
-
-    hw_timer_t *timer_1 = NULL;
-
-    void IRAM_ATTR rButtonInt(void);
-    void IRAM_ATTR lButtonInt(void);
-    void IRAM_ATTR rTimerInt(void);
-    void IRAM_ATTR lTimerInt(void);
-
-    //Right button interrupt function
-    void IRAM_ATTR rButtonInt(void)
+    //Prepara i inicia el debouncing: desactiva les interrupcions i fa cridar el timer en DEBOUNCE_TIME us
+    void beginDebouncing(void)
     {
-        if(digitalRead(R_BTN_PIN) == LOW) //just s'ha apretat
-        {
-            //desactivar interrupció dos botons
-            detachInterrupt(digitalPinToInterrupt(R_BTN_PIN));
-            detachInterrupt(digitalPinToInterrupt(L_BTN_PIN));
-
-            //activar timer 100ms
-            timerAlarmWrite(timer_1, 1000000, true); //set boundary to 1M: 100 ms
-            timerAlarmEnable(timer_1);
-
-            ms100_flag = true; //activar flag
-        }
-
-        if(digitalRead(R_BTN_PIN) == HIGH) //s'ha soltat
-        {
-            if(s3_flag == false) //encara no han passat 3 segons
-            {
-                input = DRE_CURT;
-
-            }
-            /*else //No existeix aquesta opció: el micro està en sleep
-            {
-                input = DRE_SOLTAR;
-            }*/
-            
-            //Activar interrupció de l'altre botó
-            attachInterrupt(L_BTN_PIN, lButtonInt, CHANGE);
-        }
+        detachInterrupt(digitalPinToInterrupt(R_BTN_PIN)); //desactivem interrupcions per als dos botons
+        detachInterrupt(digitalPinToInterrupt(L_BTN_PIN));
+        timerWrite((hw_timer_t*)timer_0, 0);
+        timerAlarmWrite((hw_timer_t*)timer_0, DEBOUNCE_TIME, false);
+        timerAlarmEnable((hw_timer_t*)timer_0);
     }
 
-    //Timer interrupt to manage debouncing and short-long press for right button
-    void IRAM_ATTR rTimerInt(void)
+    void IRAM_ATTR pinISR(void);
+
+    volatile Input input = RES;
+    volatile Sort sort_state = FREE;
+
+
+    //Rutina de servei a la interrupció pels dos pins associats als botons
+    void IRAM_ATTR pinISR(void)
     {
-        if(ms100_flag == true) //debouncing
+        switch(sort_state)
         {
-            ms100_flag = false; //desactivar flag
+            case FREE:{ //nothing going. Start debouncing
+                if(digitalRead(R_BTN_PIN) == LOW)
+                {
+                    beginDebouncing();
+                    sort_state = R_DEBOUNCE;
+                }
+                else if(digitalRead(L_BTN_PIN) == LOW)
+                {
+                    beginDebouncing();
+                    sort_state = L_DEBOUNCE;
 
-            attachInterrupt(R_BTN_PIN, rButtonInt, CHANGE); //reactivar interrupció botó
-            if(digitalRead(L_BTN_PIN) == LOW) //botó segueix apretat → debouncing OK
-            {
-                button_flag = false; //preparant flag botó
-
-                //programar timer per a 3 s
-                timerAlarmWrite(timer_1, 30000000, true); //set boundary to 30M: 3 segons
-                timerAlarmEnable(timer_1);
-                s3_flag = false; //preparant flag timer 3 segons
+                };
+                break;
             }
-            else //es tractava d'un rebot
-            {
-                attachInterrupt(L_BTN_PIN, lButtonInt, CHANGE); //reactivar interrupció  de l'altre botó
+            case L_SORT:{ //sorting. Button has been released before time threshold
+                if(digitalRead(L_BTN_PIN) == HIGH)
+                {
+                    input = ESQ_CURT;
+                    sort_state = FREE;
+                    attachInterrupt(digitalPinToInterrupt(R_BTN_PIN), pinISR, CHANGE); //reactiva interrupció per l'altre pin
+                }
+                break;
             }
-        }
-        else //timer 3s ha acabat
-        {
-            s3_flag = true; //flag per timer 3 s activat
-            input = DRE_LLARG;
-        }
-
-    }
-
-    //Left button interrupt function
-    void IRAM_ATTR lButtonInt(void)
-    {
-        if(digitalRead(L_BTN_PIN) == LOW) //just s'ha apretat
-        {
-            //desactivar interrupció dos botons
-            detachInterrupt(digitalPinToInterrupt(R_BTN_PIN));
-            detachInterrupt(digitalPinToInterrupt(L_BTN_PIN));
-
-            //activar timer 100ms
-            timerAlarmWrite(timer_1, 1000000, true); //set boundary to 1M: 100 ms
-            timerAlarmEnable(timer_1);
-
-            ms100_flag = true; //activar flag
-        }
-
-        if(digitalRead(L_BTN_PIN) == HIGH) //s'ha soltat
-        {
-            if(s3_flag == false) //encara no han passat 3 segons
-            {
-                input = ESQ_CURT;
-
+            case R_SORT:{
+                if(digitalRead(R_BTN_PIN) == HIGH)
+                {
+                    input = DRE_CURT;
+                    sort_state = FREE;
+                    attachInterrupt(digitalPinToInterrupt(L_BTN_PIN), pinISR, CHANGE);
+                }
+                break;
             }
-            else //ja han passat els 3 segons
-            {
-                input = ESQ_SOLTAR;
-            }
-            
-            //Activar interrupció de l'altre botó
-            attachInterrupt(R_BTN_PIN, rButtonInt, CHANGE);
-        }
-    }
+            case L_TIMER_FIRST:{ //time threshold has passed
 
-    //Timer interrupt to manage debouncing and short-long press for right button
-    void IRAM_ATTR lTimerInt(void)
-    {
-        if(ms100_flag == true) //debouncing
-        {
-            ms100_flag = false; //desactivar flag
-
-            attachInterrupt(L_BTN_PIN, lButtonInt, CHANGE); //reactivar interrupció botó
-            if(digitalRead(L_BTN_PIN) == LOW) //botó segueix apretat → debouncing OK
-            {
-                button_flag = false; //preparant flag botó
-
-                //programar timer per a 3 s
-                timerAlarmWrite(timer_1, 30000000, true); //set boundary to 30M: 3 segons
-                timerAlarmEnable(timer_1);
-                s3_flag = false; //preparant flag timer 3 segons
+                if(digitalRead(L_BTN_PIN) == HIGH)
+                {
+                    input = ESQ_SOLTAR;
+                    sort_state = FREE;
+                    attachInterrupt(digitalPinToInterrupt(R_BTN_PIN), pinISR, CHANGE);
+                }
+                break;
             }
-            else //es tractava d'un rebot
-            {
-                attachInterrupt(R_BTN_PIN, rButtonInt, CHANGE); //reactivar interrupció  de l'altre botó
+            case R_TIMER_FIRST:{
+
+                if(digitalRead(R_BTN_PIN) == HIGH)
+                {
+                    input = DRE_SOLTAR;
+                    sort_state = FREE;
+                    attachInterrupt(digitalPinToInterrupt(L_BTN_PIN), pinISR, CHANGE);
+                }
+                break;
             }
-        }
-        else //timer 3s ha acabat
-        {
-            s3_flag = true; //flag per timer 3 s activat
-            input = ESQ_LLARG;
+            default:{
+                /*Do nothing*/
+            }
         }
 
     }
 
-    //Configures pins used by buttons and activates interrupts
-    void init(void)
+    //Rutina de servei a la interrupció pel timer 0
+    void IRAM_ATTR timer0ISR(void)
     {
-        //Left button pin configuration and interrupt
+        switch(sort_state){
+            case L_DEBOUNCE:{ //debounce time finished.
+                if(digitalRead(L_BTN_PIN) == LOW) //Check and begin sorting time...
+                {
+                    sort_state = L_SORT;
+                    timerWrite((hw_timer_t*)timer_0, 0);
+                    timerAlarmWrite((hw_timer_t*)timer_0, SORT_TIME, false);
+                    timerAlarmEnable((hw_timer_t*)timer_0);
+                }
+                else //...or return to initial state.
+                {
+                    sort_state = FREE;
+                    attachInterrupt(digitalPinToInterrupt(R_BTN_PIN), pinISR, CHANGE);
+                }
+                attachInterrupt(digitalPinToInterrupt(L_BTN_PIN), pinISR, CHANGE);
+                break;
+            }
+            case R_DEBOUNCE:{ //debounce time finished.
+                if(digitalRead(R_BTN_PIN) == LOW) //Check and begin sorting time...
+                {
+                    sort_state = R_SORT;
+                    timerWrite((hw_timer_t*)timer_0, 0);
+                    timerAlarmWrite((hw_timer_t*)timer_0, SORT_TIME, false);
+                    timerAlarmEnable((hw_timer_t*)timer_0);
+                }
+                else //...or return to initial state.
+                {
+                    sort_state = FREE;
+                    attachInterrupt(digitalPinToInterrupt(L_BTN_PIN), pinISR, CHANGE);
+                }
+                attachInterrupt(digitalPinToInterrupt(R_BTN_PIN), pinISR, CHANGE);
+                break;
+            }
+            case L_SORT:{ //sorting. Time threshold has been reached without button being released
+                if(digitalRead(L_BTN_PIN) == LOW)
+                {
+                    sort_state = L_TIMER_FIRST;
+                    input = ESQ_LLARG;
+                }
+                break;
+            }
+            case R_SORT:{ //sorting. Time threshold has been reached without button being released
+                if(digitalRead(R_BTN_PIN) == LOW)
+                {
+                    sort_state = R_TIMER_FIRST;
+                    input = DRE_LLARG;
+                }
+                break;
+            }
+            default:{
+                /*Do nothing*/
+            }
+        }
+    }
+
+
+    //Configura els pins, interrupcions i timers emprats pels botons
+    //Return: 0-OK 1-error
+    uint8 init(void)
+    {
+        //Inicialització del timer 0 per controlar debouncing i distingir entre apretat curt/llarg/soltar
+        timer_0 = timerBegin(0, 80, true);
+        if(timer_0 == NULL)
+        {
+            return 1;
+        }
+        timerAttachInterrupt((hw_timer_t*)timer_0, timer0ISR, true);
+
+        input = RES;
+        sort_state = FREE;
+
+        //Inicialització de pin i interrupció per botó esquerre.
         pinMode(L_BTN_PIN, INPUT_PULLUP);
-        attachInterrupt(L_BTN_PIN, lButtonInt, CHANGE);
+        attachInterrupt(digitalPinToInterrupt(L_BTN_PIN), pinISR, CHANGE);
 
-        //Left button pin configuration and interrupt
+        //Inicialització de pin i interrupció per botó dret.
         pinMode(R_BTN_PIN, INPUT_PULLUP);
-        attachInterrupt(R_BTN_PIN, rButtonInt, CHANGE);
+        attachInterrupt(digitalPinToInterrupt(R_BTN_PIN), pinISR, CHANGE);
 
-        //Configuració pel timer antirebots i  separació curt-llarg
-        timer_1 = timerBegin(1, 80, true); //clock source default: 80MHz. divided by 80
-        timerAttachInterrupt(timer_1, rTimerInt, true); //set interrupt function to timerInt
+        return 0;
     }
 
 }; //namespace buttons

@@ -1,8 +1,7 @@
 #ifndef buttons_H
 #define buttons_H
 
-#define L_BTN_PIN 4
-#define R_BTN_PIN 2
+#include <platformTypes.h>
 
 namespace buttons{
 
@@ -12,15 +11,26 @@ namespace buttons{
         ESQ_SOLTAR,
         DRE_CURT,
         DRE_LLARG,
-        TIMER,
+        DRE_SOLTAR,
+        //TIMER,
 
         TOTAL_INPUTS,
         RES
     };
 
-    extern volatile Input input;
+    enum Sort{
+        FREE,
+        L_DEBOUNCE,
+        R_DEBOUNCE,
+        L_SORT,
+        R_SORT,
+        L_TIMER_FIRST,
+        R_TIMER_FIRST
+    };
 
-    void init(void);
+    uint8 init(void);
+    
+    extern volatile Input input;
 
 }; //namespace buttons
 

@@ -72,7 +72,3 @@ namespace bluetooth{
     }
 
 }; //namespace bluetooth
-
-
-
-

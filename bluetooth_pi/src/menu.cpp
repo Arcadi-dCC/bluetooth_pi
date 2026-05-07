@@ -1,61 +1,11 @@
 #include <menu.h>
+#include <menuFun.h>
+#include <buttons.h>
+#include <bluetooth.h>
 
 namespace menu{
 
-    enum Input{
-        ESQ_CURT,
-        ESQ_LLARG,
-        ESQ_SOLTAR,
-        DRE_CURT,
-        DRE_LLARG,
-        TIMER,
-
-        TOTAL_INPUTS,
-        RES
-    };
-
-    enum State{
-        MENU1_GRAFIC_ESPECTRAL,
-        MENU1_CANALS_ACTIUS,
-        MENU1_INHIBIR_MANUAL,
-        MENU1_INHIBIR_ESPECTRE,
-
-        GRAFIC_ESPECTRAL,
-        CANAL_ACTIU_1,
-        CANAL_ACTIU_2,
-        CANAL_ACTIU_3,
-        CANAL_ACTIU_4,
-        CANAL_ACTIU_5,
-        INHIBIR_MANUAL,
-        INHIBIR_ESPECTRE,
-
-        MENU2_CANVI_HORA,
-        MENU2_CANVI_ALARMA,
-        MENU2_ACTIVAR_ALARMA,
-
-        HORA_ESPERA_HORA,
-        HORA_INCR_HORA,
-        HORA_ESPERA_MINUT,
-        HORA_INCR_MINUT,
-
-        ALARMA_ESPERA_HORA,
-        ALARMA_INCR_HORA,
-        ALARMA_ESPERA_MINUT,
-        ALARMA_INCR_MINUT,
-        ALARMA_ESPERA_CANAL,
-        ALARMA_INCR_CANAL,
-
-        APAGAR,
-
-        TOTAL_ESTATS,
-        NA, //No aplica
-        IN  //Input intraestat
-    };
-
-    volatile Input input = RES;
-    State state = MENU1_GRAFIC_ESPECTRAL;
-
-    const State fsm_paths[TOTAL_ESTATS][TOTAL_INPUTS] =
+    const State fsm_paths[TOTAL_ESTATS][buttons::TOTAL_INPUTS] =
     {
         /*                             { ESQ_CURT , ESQ_LLARG , ESQ_SOLTAR , DRE_CURT , DRE_LLARG , TIMER } */
         /* MENU1_GRAFIC_ESPECTRAL   */ { MENU1_CANALS_ACTIUS , GRAFIC_ESPECTRAL , NA , MENU2_CANVI_HORA , APAGAR , NA},
@@ -94,10 +44,10 @@ namespace menu{
     //State Actuator. Calls the actions linked to each state.
     void (*stateAct[TOTAL_ESTATS])(void) =
     {
-        /* MENU1_GRAFIC_ESPECTRAL */    fun,
-        /* MENU1_CANALS_ACTIUS */       fun,
-        /* MENU1_INHIBIR_MANUAL */      fun,
-        /* MENU1_INHIBIR_ESPECTRE */    fun,
+        /* MENU1_GRAFIC_ESPECTRAL */    showMenu1,
+        /* MENU1_CANALS_ACTIUS */       showMenu1,
+        /* MENU1_INHIBIR_MANUAL */      showMenu1,
+        /* MENU1_INHIBIR_ESPECTRE */    showMenu1,
 
         /* GRAFIC_ESPECTRAL */          fun,
         /* CANAL_ACTIU_1 */             fun,
@@ -106,11 +56,11 @@ namespace menu{
         /* CANAL_ACTIU_4 */             fun,
         /* CANAL_ACTIU_5 */             fun,
         /* INHIBIR_MANUAL */            fun,
-        /* INHIBIR_ESPECTRE */          fun,
+        /* INHIBIR_ESPECTRE */          bluetooth::setInhibir,
 
-        /* MENU2_CANVI_HORA */          fun,
-        /* MENU2_CANVI_ALARMA */        fun,
-        /* MENU2_ACTIVAR_ALARMA */      fun,
+        /* MENU2_CANVI_HORA */          showMenu2,
+        /* MENU2_CANVI_ALARMA */        showMenu2,
+        /* MENU2_ACTIVAR_ALARMA */      showMenu2,
 
         /* HORA_ESPERA_HORA */          fun,
         /* HORA_INCR_HORA */            fun,
@@ -130,33 +80,29 @@ namespace menu{
     //Initializes menu FSM
     void init(void){
         state = MENU1_GRAFIC_ESPECTRAL;
-        input = RES;
-
-        //Start interrupt
     }
     
     //State Manager. Manages the switching between states in the menu FSM.
     void stateMgr(void){
 
-        if(fsm_paths[state][input] < TOTAL_ESTATS)
+        if(buttons::input < buttons::TOTAL_INPUTS) //hi ha un nou input
         {
-            state = fsm_paths[state][input];
-            input = RES;
-        }
-        else if(fsm_paths[state][input] == NA)
-        {
-            input = RES;
-        }
-        else //fsm_paths[state][input] == IN
-        {
-            /*Do nothing*/
-        }
+            if(fsm_paths[state][buttons::input] < TOTAL_ESTATS)
+            {
+                state = fsm_paths[state][buttons::input];
+                buttons::input = buttons::RES;
+            }
+            else if(fsm_paths[state][buttons::input] == NA)
+            {
+                buttons::input = buttons::RES;
+            }
+            else //fsm_paths[state][input] == IN
+            {
+                /*Do nothing*/
+            }
 
-        stateAct[state]();
-
-        //END:restore interrupt
+            stateAct[state]();
+        }
     }
-
-    void fun(void){/*Dummy funciton*/};
 
 };

@@ -24,15 +24,15 @@ void setup() {
     for(;;);
   }
 
-  if(bluetooth::init())
+  /*if(bluetooth::init())
   {
       Serial.println("Failed to initialize bluetooth!");
       for(;;);
-  }
+  }*/
 }
 
 void loop() {
     clocks::timeMgr();
-    bluetooth::inhibir = true;
-    bluetooth::inhibEsp();
+    //bluetooth::inhibir = true;
+    //bluetooth::inhibEsp();
 }

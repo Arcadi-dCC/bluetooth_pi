@@ -1,7 +1,7 @@
 #include <buttons.h>
 #include <Arduino.h>
 
-#define L_BTN_PIN 6
+#define L_BTN_PIN 1
 #define R_BTN_PIN 2
 
 #define DEBOUNCE_TIME 50e3 //us

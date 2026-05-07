@@ -9,8 +9,8 @@ namespace screen{
     void test(void);
 
     struct Coord{
-        uint16 w;
-        uint16 h;
+        sint32 w;
+        sint32 h;
     };
 
     extern Coord coord;

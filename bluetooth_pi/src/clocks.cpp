@@ -73,11 +73,6 @@ namespace clocks
             {
                 time.hh = 0;
             }
-            Serial.print(time.hh);
-            Serial.print(":");
-            Serial.print(time.mm);
-            Serial.print(":");
-            Serial.println(time.ss);
         }
     }
 

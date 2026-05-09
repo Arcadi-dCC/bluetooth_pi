@@ -3,6 +3,7 @@
 #include <buttons.h>
 #include <bluetooth.h>
 #include <screen.h>
+#include <Arduino.h>
 
 namespace menu{
 
@@ -61,18 +62,18 @@ namespace menu{
 
         /* MENU2_CANVI_HORA */          screen::print_MENU2_CLOCKS,
         /* MENU2_CANVI_ALARMA */        screen::print_MENU2_CLOCKS,
-        /* MENU2_ACTIVAR_ALARMA */      modAlarma,
+        /* MENU2_ACTIVAR_ALARMA */      toggleAlarma,
 
-        /* HORA_ESPERA_HORA */          screen::print_MOD_RELLOTGE,
+        /* HORA_ESPERA_HORA */          alarmIncSingle,
         /* HORA_INCR_HORA */            screen::print_MOD_RELLOTGE,
-        /* HORA_ESPERA_MINUT */         screen::print_MOD_RELLOTGE,
+        /* HORA_ESPERA_MINUT */         alarmIncSingle,
         /* HORA_INCR_MINUT */           screen::print_MOD_RELLOTGE,
 
-        /* ALARMA_ESPERA_HORA */        screen::print_MOD_ALARMA,
+        /* ALARMA_ESPERA_HORA */        alarmIncSingle,
         /* ALARMA_INCR_HORA */          screen::print_MOD_ALARMA,
-        /* ALARMA_ESPERA_MINUT */       screen::print_MOD_ALARMA,
+        /* ALARMA_ESPERA_MINUT */       alarmIncSingle,
         /* ALARMA_INCR_MINUT */         screen::print_MOD_ALARMA,
-        /* ALARMA_ESPERA_CANAL */       screen::print_MOD_ALARMA,
+        /* ALARMA_ESPERA_CANAL */       alarmIncSingle,
         /* ALARMA_INCR_CANAL */         screen::print_MOD_ALARMA,
 
         /* APAGAR */                    fun

@@ -11,6 +11,7 @@ void setup() {
   Serial.println("Serial COM Enabled");
 
   menu::init();
+  
   screen::config();
 
   if(clocks::init())
@@ -21,7 +22,7 @@ void setup() {
 
   if(buttons::init())
   {
-    Serial.println("Failed to initialize timer from buttons!");
+    Serial.println("Failed to initialize buttons timer!");
     for(;;);
   }
 

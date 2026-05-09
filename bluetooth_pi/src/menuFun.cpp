@@ -1,9 +1,7 @@
 #include <menuFun.h>
 #include <Arduino.h> //TEMP
-
 #include <clocks.h>
 #include <buttons.h>
-#include <bluetooth.h>
 #include <screen.h>
 
 namespace menu
@@ -11,7 +9,7 @@ namespace menu
     State state = MENU1_GRAFIC_ESPECTRAL;
 
     //Activa i desactiva l'alarma
-    void modAlarma(void)
+    void toggleAlarma(void)
     {
         if(buttons::input == buttons::ESQ_LLARG)
         {
@@ -20,6 +18,54 @@ namespace menu
         buttons::input = buttons::RES;
         screen::print_MENU2_CLOCKS();
         //TODO Canviar el signe de l'alarma
+    }
+
+    //Imprimeix submenu de canvi d'hora o alarma per pantalla, Incrementa en 1 el valor actual si l'input és ESQ_CURT i
+    //inicia un timer de 5 segons per passar al següent estat.
+    void alarmIncSingle(void)
+    {
+        if(buttons::input == buttons::ESQ_CURT)
+        {
+            switch(state)
+            {
+                case HORA_ESPERA_HORA:{
+                    clocks::time.hh = (clocks::time.hh + 1 ) % 24; break;
+                }
+                case HORA_ESPERA_MINUT:{
+                    clocks::time.mm = (clocks::time.mm + 1 ) % 60; break;
+                }
+                case ALARMA_ESPERA_HORA:{
+                    clocks::alarm.hh = (clocks::alarm.hh + 1 ) % 24; break;
+                }
+                case ALARMA_ESPERA_MINUT:{
+                    clocks::alarm.mm = (clocks::alarm.mm + 1 ) % 60; break;
+                }
+                case ALARMA_ESPERA_CANAL:{
+                    clocks::alarm.ch = (clocks::alarm.ch + 1 ) % 81; break;
+                }
+                default:{/*Do nothing*/}
+            }
+        }
+        buttons::input = buttons::RES;
+
+        switch(state)
+        {
+            case HORA_ESPERA_HORA:
+            case HORA_ESPERA_MINUT:
+            {
+                screen::print_MOD_RELLOTGE(); break;
+            }
+            case ALARMA_ESPERA_HORA:
+            case ALARMA_ESPERA_MINUT:
+            case ALARMA_ESPERA_CANAL:
+            {
+                screen::print_MOD_ALARMA(); break;
+            }
+            default:{/*Do nothing*/}
+        }
+
+        //demanar l'input TIMER passat el temps determinat
+        buttons::restartTimer2Countdown();
     }
 
     //Funció inofensiva genèrica

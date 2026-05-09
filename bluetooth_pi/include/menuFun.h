@@ -43,7 +43,8 @@ namespace menu{
 
     extern State state;
 
-    void modAlarma(void);
+    void toggleAlarma(void);
+    void alarmIncSingle(void);
     void fun(void);
 
 

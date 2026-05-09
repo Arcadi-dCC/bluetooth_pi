@@ -7,9 +7,12 @@
 #define DEBOUNCE_TIME 50e3 //us
 #define SORT_TIME 2e6 //us
 
+#define SWITCH_OPTION_TIME 5e6 //us. Per a submenus de canvi d'hora i alarma
+
 namespace buttons{
 
     volatile hw_timer_t *timer_0 = NULL;
+    hw_timer_t* timer_2 = NULL;
 
     //Prepara i inicia el debouncing: desactiva les interrupcions i fa cridar el timer en DEBOUNCE_TIME us
     void beginDebouncing(void)
@@ -160,6 +163,12 @@ namespace buttons{
         }
     }
 
+    //Rutina de servei a la interrupció pel timer 2. Han passat SWITCH_OPTION_TIME us. Activa l'input TIMER per fer moure la FSM.
+    void IRAM_ATTR timer2ISR(void)
+    {
+        input = TIMER;
+    }
+
 
     //Configura els pins, interrupcions i timers emprats pels botons
     //Return: 0-OK 1-error
@@ -176,6 +185,14 @@ namespace buttons{
         input = RES;
         sort_state = FREE;
 
+        //Inicialitzacio del timer 2 per per possible activar l'input TIMER quan han passat SWITCH_OPTION_TIME us.
+        timer_2 = timerBegin(2, 80, true);
+        if(timer_2 == NULL)
+        {
+            return 1;
+        }
+        timerAttachInterrupt(timer_2, timer2ISR, true);
+
         //Inicialització de pin i interrupció per botó esquerre.
         pinMode(L_BTN_PIN, INPUT_PULLUP);
         attachInterrupt(digitalPinToInterrupt(L_BTN_PIN), pinISR, CHANGE);
@@ -185,6 +202,14 @@ namespace buttons{
         attachInterrupt(digitalPinToInterrupt(R_BTN_PIN), pinISR, CHANGE);
 
         return 0;
+    }
+
+    //Reinicia un compte enrere de SWITCH_OPTION_TIME us abans d'activar l'input TIMER.
+    void restartTimer2Countdown(void)
+    {
+        timerWrite(timer_2, 0);
+        timerAlarmWrite(timer_2, SWITCH_OPTION_TIME, false);
+        timerAlarmEnable(timer_2);
     }
 
 }; //namespace buttons

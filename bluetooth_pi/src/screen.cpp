@@ -210,32 +210,26 @@ namespace screen{
     //Imprimeix per pantalla el menu per canviar l'hora.
     void print_MOD_RELLOTGE(void)
     {
-        if(pantalla != MOD_RELLOTGE)
-        {
-            pantalla = MOD_RELLOTGE;
-            screen.fillRect(MARGE, linia(0)-SUBMARGE, TFT_WIDTH, TFT_HEIGHT, TFT_BLACK); //neteja la zona de les opcions
-            screen.setCursor(MARGE, linia(0));
-            screen.printf("Hora:  %d", clocks::time.hh);
-            screen.setCursor(MARGE, linia(1));
-            screen.printf("Minut: %02d", clocks::time.mm);
-        }
+        pantalla = MOD_RELLOTGE;
+        screen.fillRect(MARGE, linia(0)-SUBMARGE, TFT_WIDTH, TFT_HEIGHT, TFT_BLACK); //neteja la zona de les opcions
+        screen.setCursor(MARGE, linia(0));
+        screen.printf("Hora:  %d", clocks::time.hh);
+        screen.setCursor(MARGE, linia(1));
+        screen.printf("Minut: %02d", clocks::time.mm);
         cursor();
     }
 
     //Imprimeix per pantalla el menu per canviar l'alarma.
     void print_MOD_ALARMA(void)
     {
-        if(pantalla != MOD_ALARMA)
-        {
-            pantalla = MOD_ALARMA;
-            screen.fillRect(MARGE, linia(0)-SUBMARGE, TFT_WIDTH, TFT_HEIGHT, TFT_BLACK); //neteja la zona de les opcions
-            screen.setCursor(MARGE, linia(0));
-            screen.printf("Hora:  %d", clocks::alarm.hh);
-            screen.setCursor(MARGE, linia(1));
-            screen.printf("Minut: %02d", clocks::alarm.mm);
-            screen.setCursor(MARGE, linia(2));
-            screen.printf("Canal:  %d", clocks::alarm.ch);
-        }
+        pantalla = MOD_ALARMA;
+        screen.fillRect(MARGE, linia(0)-SUBMARGE, TFT_WIDTH, TFT_HEIGHT, TFT_BLACK); //neteja la zona de les opcions
+        screen.setCursor(MARGE, linia(0));
+        screen.printf("Hora:  %d", clocks::alarm.hh);
+        screen.setCursor(MARGE, linia(1));
+        screen.printf("Minut: %02d", clocks::alarm.mm);
+        screen.setCursor(MARGE, linia(2));
+        screen.printf("Canal:  %d", clocks::alarm.ch);
         cursor();
     }
 

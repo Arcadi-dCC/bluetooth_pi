@@ -19,6 +19,7 @@ namespace buttons{
     };
 
     uint8 init(void);
+    void restartTimer2Countdown(void);
     
     extern volatile Input input;
 

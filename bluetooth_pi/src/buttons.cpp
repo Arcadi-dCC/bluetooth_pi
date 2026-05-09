@@ -24,6 +24,17 @@ namespace buttons{
     void IRAM_ATTR pinISR(void);
 
     volatile Input input = RES;
+
+        enum Sort{
+        FREE,
+        L_DEBOUNCE,
+        R_DEBOUNCE,
+        L_SORT,
+        R_SORT,
+        L_TIMER_FIRST,
+        R_TIMER_FIRST
+    };
+    
     volatile Sort sort_state = FREE;
 
 

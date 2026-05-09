@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include <screen.h>
+#include <menu.h>
 #include <clocks.h>
 #include <buttons.h>
 #include <bluetooth.h>
@@ -9,6 +10,7 @@ void setup() {
   delay(800);
   Serial.println("Serial COM Enabled");
 
+  menu::init();
   screen::config();
 
   if(clocks::init())
@@ -31,7 +33,7 @@ void setup() {
 }
 
 void loop() {
-    clocks::timeMgr();
-    //bluetooth::inhibir = true;
-    //bluetooth::inhibEsp();
+  menu::stateMgr();
+  clocks::timeMgr();
+  bluetooth::inhibEsp();
 }

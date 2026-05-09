@@ -5,7 +5,7 @@
 
 #define SCR_WIDTH 320
 #define SCR_HEIGHT 240
-#define FONT_SIZE 2
+#define FONT_SIZE 4
 
 namespace screen{
 
@@ -16,10 +16,9 @@ namespace screen{
     void config(void){
 
         screen.init();
-        screen.setRotation(1); //Landscape mode
-        screen.fillScreen(TFT_CYAN); //All pixels turn cyan
-        screen.setTextColor(TFT_BLACK); //Letters in black
-        screen.setTextSize(FONT_SIZE); //CHECK
+        screen.setRotation(2); //Landscape mode
+        screen.fillScreen(TFT_BLACK); //All pixels turn cyan
+        screen.setTextColor(TFT_WHITE); //Letters in black
     }
 
     void test(void){

@@ -1,4 +1,5 @@
 #include <screen.h>
+#include <menuFun.h>
 
 #include <SPI.h>
 #include <TFT_eSPI.h>
@@ -9,7 +10,7 @@
 #define LIN_SUP 40 //altura de la linia superior a la pantalla
 #define LIN_SEP 56 //separacio entre linies. Dona per a 5 línies (0, 1, 2, 3 i 4)
 #define MARGE 25 //Marge del text a escriure (deixa espai al cursor)
-#define SUBMARGE 7 //Per fer subllistes
+#define SUBMARGE 7 //Per fer subllistes, i donar marge extra als rectangles del rellotge, de menu2
 
 namespace screen{
 
@@ -40,6 +41,7 @@ namespace screen{
         screen.setTextColor(TFT_WHITE); //Lletres en blanc
         screen.setTextFont(FONT_SIZE);
         pantalla = TOTAL_PANTALLES; //Per defecte en cap pantalla, per assegurar que dibuixarà un menu
+        print_MENU1_BLUETOOTH();
     }
 
     //Recull per paràmetre la línia en la que es vol escriure (0, 1, 2, 3, 4)
@@ -47,9 +49,64 @@ namespace screen{
     sint32 linia(uint8 num) { return (sint32)(LIN_SUP + num * LIN_SEP); }
 
     //Dibuixa un triangle indicador al limit esquerre de la pantalla, i a l'alçada y.
-    void cursor(sint32 y)
+    void cursor(void)
     {
         screen.fillRect(0, linia(0), MARGE, TFT_HEIGHT, TFT_BLACK); //neteja la zona del cursor
+
+        uint16 y;
+
+        switch(menu::state)
+        {
+            //Casos on el cursor va a la línia 0
+            case (menu::MENU1_GRAFIC_ESPECTRAL):
+            case (menu::CANAL_ACTIU_1):
+            case (menu::HORA_ESPERA_HORA):
+            case (menu::HORA_INCR_HORA):
+            case (menu::ALARMA_ESPERA_HORA):
+            case (menu::ALARMA_INCR_HORA):
+            {
+                y = linia(0); break;
+            }
+
+            //Casos on el cursor va a la línia 1
+            case (menu::MENU1_CANALS_ACTIUS):
+            case (menu::CANAL_ACTIU_2):
+            case (menu::MENU2_CANVI_HORA):
+            case (menu::HORA_ESPERA_MINUT):
+            case (menu::HORA_INCR_MINUT):
+            case (menu::ALARMA_ESPERA_MINUT):
+            case (menu::ALARMA_INCR_MINUT):
+            {
+                y = linia(1); break;
+            }
+
+            //Casos on el cursor va a la línia 2
+            case (menu::MENU1_INHIBIR_MANUAL):
+            case (menu::CANAL_ACTIU_3):
+            case (menu::ALARMA_ESPERA_CANAL):
+            case (menu::ALARMA_INCR_CANAL):
+            {
+                y = linia(2); break;
+            }
+
+            //Casos on el cursor va a la línia 3
+            case (menu::MENU1_INHIBIR_ESPECTRE):
+            case (menu::CANAL_ACTIU_4):
+            case (menu::MENU2_CANVI_ALARMA):
+            {
+                y = linia(3); break;
+            }
+
+            //Casos on el cursor va a la línia 4
+            case (menu::CANAL_ACTIU_5):
+            case (menu::MENU2_ACTIVAR_ALARMA):
+            {
+                y = linia(4); break;
+            }
+            default:{
+                /*Do nothing*/
+            }
+        }
         screen.fillTriangle(0,y,0,y+20,17,y+10, TFT_WHITE);
     }
 
@@ -59,13 +116,13 @@ namespace screen{
         if(pantalla != MENU1_BLUETOOTH)
         {
             pantalla = MENU1_BLUETOOTH;
-            screen.fillRect(MARGE, linia(0), TFT_WIDTH, TFT_HEIGHT, TFT_BLACK); //neteja la zona de les opcions
+            screen.fillRect(MARGE, linia(0)-SUBMARGE, TFT_WIDTH, TFT_HEIGHT, TFT_BLACK); //neteja la zona de les opcions
             screen.drawString("Grafic espectral", MARGE, linia(0));
             screen.drawString("Canals actius", MARGE, linia(1));
             screen.drawString("Inhibir canal (man)", MARGE, linia(2));
             screen.drawString("Inhibir espectre", MARGE, linia(3));
         }
-        cursor(linia(0));
+        cursor();
     }
 
     //Imprimeix er pantalla el gràfic espectral.
@@ -100,7 +157,7 @@ namespace screen{
                 screen.printf("RSSI: %d", rssi[i]);
             }
         }
-        cursor(linia(0));
+        cursor();
     }
 
     //Imprimeix per pantalla el selector manual de canals a inhibir.
@@ -122,13 +179,13 @@ namespace screen{
             pantalla = MENU2_CLOCKS;
             screen.fillRect(MARGE, linia(0), TFT_WIDTH, TFT_HEIGHT, TFT_BLACK); //neteja la zona de les opcions
 
-            screen.drawRect(MARGE, linia(0)-10, 155, 40, TFT_WHITE); //Rectangle decoratiu  al voltant de l'hora
+            screen.drawRect(MARGE, linia(0)-SUBMARGE, 155, 37, TFT_WHITE); //Rectangle decoratiu  al voltant de l'hora
             screen.setCursor(MARGE+SUBMARGE, linia(0));
             screen.printf("Hora - %d:%02d", TEMP, TEMP);
 
             screen.drawString("Modificar", MARGE+2*SUBMARGE, linia(1));
 
-            screen.drawRect(MARGE, linia(2)-10, 175, 40, TFT_WHITE); //Rectangle decoratiu  al voltant de l'hora
+            screen.drawRect(MARGE, linia(2)-SUBMARGE, 175, 37, TFT_WHITE); //Rectangle decoratiu  al voltant de l'hora
             screen.setCursor(MARGE+SUBMARGE, linia(2));
             screen.printf("Alarma - %d:%02d", TEMP, TEMP);
 
@@ -136,7 +193,7 @@ namespace screen{
             screen.drawString("Des/activar", MARGE+2*SUBMARGE, linia(4));
 
         }
-        cursor(linia(1));
+        cursor();
     }
 
     //Imprimeix per pantalla el menu per canviar l'hora.
@@ -145,13 +202,13 @@ namespace screen{
         if(pantalla != MOD_RELLOTGE)
         {
             pantalla = MOD_RELLOTGE;
-            screen.fillRect(MARGE, linia(0), TFT_WIDTH, TFT_HEIGHT, TFT_BLACK); //neteja la zona de les opcions
+            screen.fillRect(MARGE, linia(0)-SUBMARGE, TFT_WIDTH, TFT_HEIGHT, TFT_BLACK); //neteja la zona de les opcions
             screen.setCursor(MARGE, linia(0));
             screen.printf("Hora:  %d", TEMP);
             screen.setCursor(MARGE, linia(1));
             screen.printf("Minut: %02d", TEMP);
         }
-        cursor(linia(0));
+        cursor();
     }
 
     //Imprimeix per pantalla el menu per canviar l'alarma.
@@ -160,7 +217,7 @@ namespace screen{
         if(pantalla != MOD_ALARMA)
         {
             pantalla = MOD_ALARMA;
-            screen.fillRect(MARGE, linia(0), TFT_WIDTH, TFT_HEIGHT, TFT_BLACK); //neteja la zona de les opcions
+            screen.fillRect(MARGE, linia(0)-SUBMARGE, TFT_WIDTH, TFT_HEIGHT, TFT_BLACK); //neteja la zona de les opcions
             screen.setCursor(MARGE, linia(0));
             screen.printf("Hora:  %d", TEMP);
             screen.setCursor(MARGE, linia(1));
@@ -168,7 +225,7 @@ namespace screen{
             screen.setCursor(MARGE, linia(2));
             screen.printf("Canal:  %d", TEMP);
         }
-        cursor(linia(0));
+        cursor();
     }
 
 }; //namespace screen

@@ -2,6 +2,7 @@
 #include <menuFun.h>
 #include <buttons.h>
 #include <bluetooth.h>
+#include <screen.h>
 
 namespace menu{
 
@@ -44,35 +45,35 @@ namespace menu{
     //State Actuator. Calls the actions linked to each state.
     void (*stateAct[TOTAL_ESTATS])(void) =
     {
-        /* MENU1_GRAFIC_ESPECTRAL */    fun,
-        /* MENU1_CANALS_ACTIUS */       fun,
-        /* MENU1_INHIBIR_MANUAL */      fun,
-        /* MENU1_INHIBIR_ESPECTRE */    fun,
+        /* MENU1_GRAFIC_ESPECTRAL */    screen::print_MENU1_BLUETOOTH,
+        /* MENU1_CANALS_ACTIUS */       screen::print_MENU1_BLUETOOTH,
+        /* MENU1_INHIBIR_MANUAL */      screen::print_MENU1_BLUETOOTH,
+        /* MENU1_INHIBIR_ESPECTRE */    screen::print_MENU1_BLUETOOTH,
 
-        /* GRAFIC_ESPECTRAL */          fun,
-        /* CANAL_ACTIU_1 */             fun,
-        /* CANAL_ACTIU_2 */             fun,
-        /* CANAL_ACTIU_3 */             fun,
-        /* CANAL_ACTIU_4 */             fun,
-        /* CANAL_ACTIU_5 */             fun,
-        /* INHIBIR_MANUAL */            fun,
+        /* GRAFIC_ESPECTRAL */          screen::print_GRAFIC_ESPECTRAL,
+        /* CANAL_ACTIU_1 */             screen::print_CANALS_ACTIUS,
+        /* CANAL_ACTIU_2 */             screen::print_CANALS_ACTIUS,
+        /* CANAL_ACTIU_3 */             screen::print_CANALS_ACTIUS,
+        /* CANAL_ACTIU_4 */             screen::print_CANALS_ACTIUS,
+        /* CANAL_ACTIU_5 */             screen::print_CANALS_ACTIUS,
+        /* INHIBIR_MANUAL */            screen::print_INHIBIR_MAN,
         /* INHIBIR_ESPECTRE */          bluetooth::setInhibir,
 
-        /* MENU2_CANVI_HORA */          fun,
-        /* MENU2_CANVI_ALARMA */        fun,
+        /* MENU2_CANVI_HORA */          screen::print_MENU2_CLOCKS,
+        /* MENU2_CANVI_ALARMA */        screen::print_MENU2_CLOCKS,
         /* MENU2_ACTIVAR_ALARMA */      modAlarma,
 
-        /* HORA_ESPERA_HORA */          fun,
-        /* HORA_INCR_HORA */            fun,
-        /* HORA_ESPERA_MINUT */         fun,
-        /* HORA_INCR_MINUT */           fun,
+        /* HORA_ESPERA_HORA */          screen::print_MOD_RELLOTGE,
+        /* HORA_INCR_HORA */            screen::print_MOD_RELLOTGE,
+        /* HORA_ESPERA_MINUT */         screen::print_MOD_RELLOTGE,
+        /* HORA_INCR_MINUT */           screen::print_MOD_RELLOTGE,
 
-        /* ALARMA_ESPERA_HORA */        fun,
-        /* ALARMA_INCR_HORA */          fun,
-        /* ALARMA_ESPERA_MINUT */       fun,
-        /* ALARMA_INCR_MINUT */         fun,
-        /* ALARMA_ESPERA_CANAL */       fun,
-        /* ALARMA_INCR_CANAL */         fun,
+        /* ALARMA_ESPERA_HORA */        screen::print_MOD_ALARMA,
+        /* ALARMA_INCR_HORA */          screen::print_MOD_ALARMA,
+        /* ALARMA_ESPERA_MINUT */       screen::print_MOD_ALARMA,
+        /* ALARMA_INCR_MINUT */         screen::print_MOD_ALARMA,
+        /* ALARMA_ESPERA_CANAL */       screen::print_MOD_ALARMA,
+        /* ALARMA_INCR_CANAL */         screen::print_MOD_ALARMA,
 
         /* APAGAR */                    fun
     };

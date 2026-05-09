@@ -4,6 +4,7 @@
 #include <clocks.h>
 #include <buttons.h>
 #include <bluetooth.h>
+#include <screen.h>
 
 namespace menu
 {
@@ -17,7 +18,8 @@ namespace menu
             clocks::alarm.on = !clocks::alarm.on; //canvia estat de l'alarma si s'apreta i manté el botó esquerre
         }
         buttons::input = buttons::RES;
-        //TODO Canvia el signe de l'alarma
+        screen::print_MENU2_CLOCKS();
+        //TODO Canviar el signe de l'alarma
     }
 
     //Funció inofensiva genèrica

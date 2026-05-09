@@ -1,10 +1,13 @@
 #include <clocks.h>
 #include <platformTypes.h>
 #include <Arduino.h>
+#include <screen.h>
 
 namespace clocks
 {
     volatile bool adv_sec = false; //flag per indicar que ha passat 1 segon
+
+    bool update_time = false; //flag per indicar a pantalla que cal actualitzar el temps mostrat
     
     //ISR per a timer1: cridada 1 cop per segon
     void IRAM_ATTR secISR(void)
@@ -31,6 +34,8 @@ namespace clocks
         alarm.ss=0;
         alarm.on=false;
 
+        update_time = false;
+
         //Inicialitzar timer1
         sec_timer = timerBegin(1, 80, true); //clock source default: 80MHz. Dividit per 80: 1MHz
         if (sec_timer == NULL)
@@ -56,6 +61,7 @@ namespace clocks
             {
                 time.ss = 0;
                 time.mm++;
+                update_time = true;
             }
             if(time.mm >= 60)
             {
@@ -65,6 +71,14 @@ namespace clocks
             if(time.hh >= 24)
             {
                 time.hh = 0;
+            }
+
+            //Si s'ha actualitzat el minut i s'està mostrant el temps per pantalla, actualitzar pantalla
+            if(update_time == true)
+            {
+                update_time = false;
+                screen::updateTime();
+
             }
         }
     }

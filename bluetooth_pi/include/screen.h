@@ -15,6 +15,8 @@ namespace screen{
     void print_MOD_RELLOTGE(void);
     void print_MOD_ALARMA(void);
 
+    void updateTime(void);
+
 }; //namespace screen
 
 #endif //SCREEN_H_

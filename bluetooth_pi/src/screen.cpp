@@ -1,5 +1,6 @@
 #include <screen.h>
 #include <menuFun.h>
+#include <clocks.h>
 
 #include <SPI.h>
 #include <TFT_eSPI.h>
@@ -170,7 +171,6 @@ namespace screen{
         }
     }
 
-    uint8 TEMP = 22;
     //Imprimeix per pantalla el menu 2 (rellotges).
     void print_MENU2_CLOCKS(void)
     {
@@ -181,19 +181,30 @@ namespace screen{
 
             screen.drawRect(MARGE, linia(0)-SUBMARGE, 155, 37, TFT_WHITE); //Rectangle decoratiu  al voltant de l'hora
             screen.setCursor(MARGE+SUBMARGE, linia(0));
-            screen.printf("Hora - %d:%02d", TEMP, TEMP);
+            screen.printf("Hora - %d:%02d", clocks::time.hh, clocks::time.mm);
 
             screen.drawString("Modificar", MARGE+2*SUBMARGE, linia(1));
 
             screen.drawRect(MARGE, linia(2)-SUBMARGE, 175, 37, TFT_WHITE); //Rectangle decoratiu  al voltant de l'hora
             screen.setCursor(MARGE+SUBMARGE, linia(2));
-            screen.printf("Alarma - %d:%02d", TEMP, TEMP);
+            screen.printf("Alarma - %d:%02d", clocks::alarm.hh, clocks::alarm.mm);
 
             screen.drawString("Modificar", MARGE+2*SUBMARGE, linia(3));
             screen.drawString("Des/activar", MARGE+2*SUBMARGE, linia(4));
 
         }
         cursor();
+    }
+
+    //Actualitza el rellotge en pantalla que apareix al MENU 2 (rellotge)
+    void updateTime(void)
+    {
+        if(pantalla == MENU2_CLOCKS)
+        {
+            screen.fillRect(MARGE+1, linia(0)-SUBMARGE+1, 153, 35, TFT_BLACK);
+            screen.setCursor(MARGE+SUBMARGE, linia(0));
+            screen.printf("Hora - %d:%02d", clocks::time.hh, clocks::time.mm);
+        }
     }
 
     //Imprimeix per pantalla el menu per canviar l'hora.
@@ -204,9 +215,9 @@ namespace screen{
             pantalla = MOD_RELLOTGE;
             screen.fillRect(MARGE, linia(0)-SUBMARGE, TFT_WIDTH, TFT_HEIGHT, TFT_BLACK); //neteja la zona de les opcions
             screen.setCursor(MARGE, linia(0));
-            screen.printf("Hora:  %d", TEMP);
+            screen.printf("Hora:  %d", clocks::time.hh);
             screen.setCursor(MARGE, linia(1));
-            screen.printf("Minut: %02d", TEMP);
+            screen.printf("Minut: %02d", clocks::time.mm);
         }
         cursor();
     }
@@ -219,11 +230,11 @@ namespace screen{
             pantalla = MOD_ALARMA;
             screen.fillRect(MARGE, linia(0)-SUBMARGE, TFT_WIDTH, TFT_HEIGHT, TFT_BLACK); //neteja la zona de les opcions
             screen.setCursor(MARGE, linia(0));
-            screen.printf("Hora:  %d", TEMP);
+            screen.printf("Hora:  %d", clocks::alarm.hh);
             screen.setCursor(MARGE, linia(1));
-            screen.printf("Minut: %02d", TEMP);
+            screen.printf("Minut: %02d", clocks::alarm.mm);
             screen.setCursor(MARGE, linia(2));
-            screen.printf("Canal:  %d", TEMP);
+            screen.printf("Canal:  %d", clocks::alarm.ch);
         }
         cursor();
     }

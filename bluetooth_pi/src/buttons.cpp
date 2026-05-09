@@ -1,8 +1,8 @@
 #include <buttons.h>
 #include <Arduino.h>
 
-#define L_BTN_PIN 6
-#define R_BTN_PIN 2
+#define L_BTN_PIN 21
+#define R_BTN_PIN 20
 
 #define DEBOUNCE_TIME 50e3 //us
 #define SORT_TIME 2e6 //us
@@ -24,6 +24,17 @@ namespace buttons{
     void IRAM_ATTR pinISR(void);
 
     volatile Input input = RES;
+
+        enum Sort{
+        FREE,
+        L_DEBOUNCE,
+        R_DEBOUNCE,
+        L_SORT,
+        R_SORT,
+        L_TIMER_FIRST,
+        R_TIMER_FIRST
+    };
+    
     volatile Sort sort_state = FREE;
 
 

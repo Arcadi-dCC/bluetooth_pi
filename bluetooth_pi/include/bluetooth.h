@@ -6,7 +6,9 @@
 namespace bluetooth{
 
     uint8 init(void);
+    
     void inhibEsp(void);
+    void setInhibir(void);
 
     extern bool inhibir;
 

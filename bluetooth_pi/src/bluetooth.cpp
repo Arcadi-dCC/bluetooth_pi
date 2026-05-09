@@ -52,10 +52,10 @@ namespace bluetooth{
         return 0;
     }
 
-    //inhibieix tot l'especte bluetooth
-    void inhibEsp(void)
+    //inhibieix tot l'especte bluetooth si el flag "inhibir" està aixecat
+    void inhibEsp(void) //AVIS: si el bluetooth no s'inhibiex com abans, pot ser perquè això no s'està executant el 100% del temps
     {
-        while(inhibir = true)
+        if(inhibir == true)
         {
             // Sweep through all channels (0 to 79)
             for (int i = 0; i < 79; i++)
@@ -72,5 +72,7 @@ namespace bluetooth{
             }
         }
     }
+
+    void setInhibir(void){inhibir = true;}
 
 }; //namespace bluetooth

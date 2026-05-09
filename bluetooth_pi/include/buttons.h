@@ -11,21 +11,11 @@ namespace buttons{
         ESQ_SOLTAR,
         DRE_CURT,
         DRE_LLARG,
-        DRE_SOLTAR,
-        //TIMER,
+        TIMER,
 
         TOTAL_INPUTS,
-        RES
-    };
-
-    enum Sort{
-        FREE,
-        L_DEBOUNCE,
-        R_DEBOUNCE,
-        L_SORT,
-        R_SORT,
-        L_TIMER_FIRST,
-        R_TIMER_FIRST
+        RES,
+        DRE_SOLTAR //No emprada
     };
 
     uint8 init(void);

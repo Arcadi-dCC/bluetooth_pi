@@ -43,9 +43,8 @@ namespace menu{
 
     extern State state;
 
+    void modAlarma(void);
     void fun(void);
-    void showMenu1(void);
-    void showMenu2(void);
 
 
 } //namespace menu

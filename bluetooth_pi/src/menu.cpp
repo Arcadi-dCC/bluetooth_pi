@@ -44,10 +44,10 @@ namespace menu{
     //State Actuator. Calls the actions linked to each state.
     void (*stateAct[TOTAL_ESTATS])(void) =
     {
-        /* MENU1_GRAFIC_ESPECTRAL */    showMenu1,
-        /* MENU1_CANALS_ACTIUS */       showMenu1,
-        /* MENU1_INHIBIR_MANUAL */      showMenu1,
-        /* MENU1_INHIBIR_ESPECTRE */    showMenu1,
+        /* MENU1_GRAFIC_ESPECTRAL */    fun,
+        /* MENU1_CANALS_ACTIUS */       fun,
+        /* MENU1_INHIBIR_MANUAL */      fun,
+        /* MENU1_INHIBIR_ESPECTRE */    fun,
 
         /* GRAFIC_ESPECTRAL */          fun,
         /* CANAL_ACTIU_1 */             fun,
@@ -58,9 +58,9 @@ namespace menu{
         /* INHIBIR_MANUAL */            fun,
         /* INHIBIR_ESPECTRE */          bluetooth::setInhibir,
 
-        /* MENU2_CANVI_HORA */          showMenu2,
-        /* MENU2_CANVI_ALARMA */        showMenu2,
-        /* MENU2_ACTIVAR_ALARMA */      showMenu2,
+        /* MENU2_CANVI_HORA */          fun,
+        /* MENU2_CANVI_ALARMA */        fun,
+        /* MENU2_ACTIVAR_ALARMA */      modAlarma,
 
         /* HORA_ESPERA_HORA */          fun,
         /* HORA_INCR_HORA */            fun,
@@ -98,7 +98,7 @@ namespace menu{
             }
             else //fsm_paths[state][input] == IN
             {
-                /*Do nothing*/
+                /*Do nothing. Buttons::input should be set to buttons::RES inside the called function*/
             }
 
             stateAct[state]();

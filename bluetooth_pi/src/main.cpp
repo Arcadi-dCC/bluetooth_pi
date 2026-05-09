@@ -10,7 +10,6 @@ void setup() {
   Serial.println("Serial COM Enabled");
 
   screen::config();
-  screen::test();
 
   if(clocks::init())
   {

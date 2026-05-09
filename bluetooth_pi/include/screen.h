@@ -6,14 +6,14 @@
 namespace screen{
 
     void config(void);
-    void test(void);
 
-    struct Coord{
-        sint32 w;
-        sint32 h;
-    };
-
-    extern Coord coord;
+    void print_MENU1_BLUETOOTH(void);
+    void print_GRAFIC_ESPECTRAL(void);
+    void print_CANALS_ACTIUS(void);
+    void print_INHIBIR_MAN(void);
+    void print_MENU2_CLOCKS(void);
+    void print_MOD_RELLOTGE(void);
+    void print_MOD_ALARMA(void);
 
 }; //namespace screen
 

@@ -29,16 +29,16 @@ namespace menu{
         /* MENU2_ACTIVAR_ALARMA     */ { MENU2_CANVI_HORA , IN , NA , MENU1_GRAFIC_ESPECTRAL , APAGAR , NA },
 
         /* HORA_ESPERA_HORA         */ { IN , HORA_INCR_HORA , NA , MENU2_CANVI_HORA , APAGAR , HORA_ESPERA_MINUT },
-        /* HORA_INCR_HORA           */ { NA , NA , HORA_ESPERA_HORA , MENU2_CANVI_HORA , APAGAR , NA },
+        /* HORA_INCR_HORA           */ { NA , NA , HORA_ESPERA_HORA , MENU2_CANVI_HORA , APAGAR , IN },
         /* HORA_ESPERA_MINUT        */ { IN , HORA_INCR_MINUT , NA , MENU2_CANVI_HORA , APAGAR , MENU2_CANVI_HORA },
-        /* HORA_INCR_MINUT          */ { NA , NA , HORA_ESPERA_MINUT , MENU2_CANVI_HORA , APAGAR , NA },
+        /* HORA_INCR_MINUT          */ { NA , NA , HORA_ESPERA_MINUT , MENU2_CANVI_HORA , APAGAR , IN },
 
         /* ALARMA_ESPERA_HORA       */ { IN , ALARMA_INCR_HORA , NA , MENU2_CANVI_ALARMA , APAGAR , ALARMA_ESPERA_MINUT },
-        /* ALARMA_INCR_HORA         */ { NA , NA , ALARMA_ESPERA_HORA , MENU2_CANVI_ALARMA , APAGAR , NA },
+        /* ALARMA_INCR_HORA         */ { NA , NA , ALARMA_ESPERA_HORA , MENU2_CANVI_ALARMA , APAGAR , IN },
         /* ALARMA_ESPERA_MINUT      */ { IN , ALARMA_INCR_MINUT , NA , MENU2_CANVI_ALARMA , APAGAR , ALARMA_ESPERA_CANAL },
-        /* ALARMA_INCR_MINUT        */ { NA , NA , ALARMA_ESPERA_MINUT , MENU2_CANVI_ALARMA , APAGAR , NA },
+        /* ALARMA_INCR_MINUT        */ { NA , NA , ALARMA_ESPERA_MINUT , MENU2_CANVI_ALARMA , APAGAR , IN },
         /* ALARMA_ESPERA_CANAL      */ { IN , ALARMA_INCR_CANAL , NA , MENU2_CANVI_ALARMA , APAGAR , MENU2_CANVI_ALARMA },
-        /* ALARMA_INCR_CANAL        */ { NA , NA , ALARMA_ESPERA_CANAL , MENU2_CANVI_ALARMA , APAGAR , NA },
+        /* ALARMA_INCR_CANAL        */ { NA , NA , ALARMA_ESPERA_CANAL , MENU2_CANVI_ALARMA , APAGAR , IN },
         
         /* APAGAR                   */ { NA , NA , NA , NA , NA , NA }
     };
@@ -65,16 +65,16 @@ namespace menu{
         /* MENU2_ACTIVAR_ALARMA */      toggleAlarma,
 
         /* HORA_ESPERA_HORA */          alarmIncSingle,
-        /* HORA_INCR_HORA */            screen::print_MOD_RELLOTGE,
+        /* HORA_INCR_HORA */            alarmIncMult,
         /* HORA_ESPERA_MINUT */         alarmIncSingle,
-        /* HORA_INCR_MINUT */           screen::print_MOD_RELLOTGE,
+        /* HORA_INCR_MINUT */           alarmIncMult,
 
         /* ALARMA_ESPERA_HORA */        alarmIncSingle,
-        /* ALARMA_INCR_HORA */          screen::print_MOD_ALARMA,
+        /* ALARMA_INCR_HORA */          alarmIncMult,
         /* ALARMA_ESPERA_MINUT */       alarmIncSingle,
-        /* ALARMA_INCR_MINUT */         screen::print_MOD_ALARMA,
+        /* ALARMA_INCR_MINUT */         alarmIncMult,
         /* ALARMA_ESPERA_CANAL */       alarmIncSingle,
-        /* ALARMA_INCR_CANAL */         screen::print_MOD_ALARMA,
+        /* ALARMA_INCR_CANAL */         alarmIncMult,
 
         /* APAGAR */                    fun
     };

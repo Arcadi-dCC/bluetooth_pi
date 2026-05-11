@@ -21,9 +21,12 @@ namespace menu
     }
 
     //Imprimeix submenu de canvi d'hora o alarma per pantalla, Incrementa en 1 el valor actual si l'input és ESQ_CURT i
-    //inicia un timer de 5 segons per passar al següent estat.
+    //inicia un timer de SWITCH_OPTION_TIME us per passar al següent estat.
     void alarmIncSingle(void)
     {
+        //demanar l'input TIMER passat el temps determinat
+        buttons::restartTimer2Countdown(SWITCH_OPTION_TIME);
+
         if(buttons::input == buttons::ESQ_CURT)
         {
             switch(state)
@@ -63,9 +66,51 @@ namespace menu
             }
             default:{/*Do nothing*/}
         }
+    }
 
-        //demanar l'input TIMER passat el temps determinat
-        buttons::restartTimer2Countdown();
+    //Imprimeix submenu de canvi d'hora o alarma per pantalla, Incrementa en 1 el valor actual si l'input és TIMER i
+    //inicia un timer de TIME_BETWEEN_INCREMENT per continuar incrementant el valor
+    void alarmIncMult(void)
+    {
+        //Només es crida a aquesta funció si el botó esquerre s'acaba d'apretar llarg, o si ha saltat el timer.
+        //Per tant, no cal fer comprovacions. Es fa així per compatibilitat amb altres parts de l'estructura de la fsm.
+        buttons::input = buttons::RES;
+        buttons::restartTimer2Countdown(TIME_BETWEEN_INCREMENT);
+        switch(state)
+        {
+            case HORA_INCR_HORA:{
+                clocks::time.hh = (clocks::time.hh + 1 ) % 24; break;
+            }
+            case HORA_INCR_MINUT:{
+                clocks::time.mm = (clocks::time.mm + 1 ) % 60; break;
+            }
+            case ALARMA_INCR_HORA:{
+                clocks::alarm.hh = (clocks::alarm.hh + 1 ) % 24; break;
+            }
+            case ALARMA_INCR_MINUT:{
+                clocks::alarm.mm = (clocks::alarm.mm + 1 ) % 60; break;
+            }
+            case ALARMA_INCR_CANAL:{
+                clocks::alarm.ch = (clocks::alarm.ch + 1 ) % 81; break;
+            }
+            default:{/*Do nothing*/}
+        }
+
+        switch(state)
+        {
+            case HORA_INCR_HORA:
+            case HORA_INCR_MINUT:
+            {
+                screen::print_MOD_RELLOTGE(); break;
+            }
+            case ALARMA_INCR_HORA:
+            case ALARMA_INCR_MINUT:
+            case ALARMA_INCR_CANAL:
+            {
+                screen::print_MOD_ALARMA(); break;
+            }
+            default:{/*Do nothing*/}
+        }
     }
 
     //Funció inofensiva genèrica

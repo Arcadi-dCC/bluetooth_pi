@@ -7,8 +7,6 @@
 #define DEBOUNCE_TIME 50e3 //us
 #define SORT_TIME 2e6 //us
 
-#define SWITCH_OPTION_TIME 5e6 //us. Per a submenus de canvi d'hora i alarma
-
 namespace buttons{
 
     volatile hw_timer_t *timer_0 = NULL;
@@ -185,7 +183,7 @@ namespace buttons{
         input = RES;
         sort_state = FREE;
 
-        //Inicialitzacio del timer 2 per per possible activar l'input TIMER quan han passat SWITCH_OPTION_TIME us.
+        //Inicialitzacio del timer 2 per per possible activar l'input TIMER prèvia sol·licitud.
         timer_2 = timerBegin(2, 80, true);
         if(timer_2 == NULL)
         {
@@ -204,11 +202,11 @@ namespace buttons{
         return 0;
     }
 
-    //Reinicia un compte enrere de SWITCH_OPTION_TIME us abans d'activar l'input TIMER.
-    void restartTimer2Countdown(void)
+    //Reinicia un compte enrere dels microsegons passats per paràmetre abans d'activar l'input TIMER.
+    void restartTimer2Countdown(uint64 us)
     {
         timerWrite(timer_2, 0);
-        timerAlarmWrite(timer_2, SWITCH_OPTION_TIME, false);
+        timerAlarmWrite(timer_2, us, false);
         timerAlarmEnable(timer_2);
     }
 

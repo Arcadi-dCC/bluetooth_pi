@@ -12,7 +12,12 @@ namespace menu
     //Activa i desactiva el flag per inhibir canals bluetooth, i actualitza el seu estat a la barra superior.
     void toggleInhibir(void)
     {
-        bluetooth::inhibir = !bluetooth::inhibir;
+        if(buttons::input == buttons::ESQ_LLARG)
+        {
+            bluetooth::inhibir = !bluetooth::inhibir;
+        }
+        buttons::input = buttons::RES;
+        screen::print_MENU1_BLUETOOTH(); //Imprimeix cursor
         screen::updateTopBarJam();
     }
 
@@ -24,7 +29,7 @@ namespace menu
             clocks::alarm.on = !clocks::alarm.on; //canvia estat de l'alarma si s'apreta i manté el botó esquerre
         }
         buttons::input = buttons::RES;
-        screen::print_MENU2_CLOCKS();
+        screen::print_MENU2_CLOCKS(); //imprimeix cursor
         screen::updateTopBarAlarm();
     }
 

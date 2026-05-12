@@ -2,12 +2,13 @@
 #include <platformTypes.h>
 #include <Arduino.h>
 #include <screen.h>
+#include <bluetooth.h>
 
 namespace clocks
 {
     volatile bool adv_sec = false; //flag per indicar que ha passat 1 segon
 
-    bool update_time = false; //flag per indicar a pantalla que cal actualitzar el temps mostrat
+    bool new_min = false; //flag per indicar a pantalla que ha passat un minut: cal actualitzar el temps mostrat i comprovar l'alarma
     
     //ISR per a timer1: cridada 1 cop per segon
     void IRAM_ATTR secISR(void)
@@ -32,9 +33,11 @@ namespace clocks
         alarm.hh=0;
         alarm.mm=0;
         alarm.ss=0;
+        alarm.ch=0;
         alarm.on=false;
 
-        update_time = false;
+        adv_sec = false;
+        new_min = false;
 
         //Inicialitzar timer1
         sec_timer = timerBegin(1, 80, true); //clock source default: 80MHz. Dividit per 80: 1MHz
@@ -61,7 +64,7 @@ namespace clocks
             {
                 time.ss = 0;
                 time.mm++;
-                update_time = true;
+                new_min = true;
             }
             if(time.mm >= 60)
             {
@@ -73,12 +76,20 @@ namespace clocks
                 time.hh = 0;
             }
 
-            //Si s'ha actualitzat el minut i s'està mostrant el temps per pantalla, actualitzar pantalla
-            if(update_time == true)
+            //Si s'ha actualitzat el minut...
+            if(new_min == true)
             {
-                update_time = false;
-                screen::updateTime();
-
+                new_min = false; //desactiva el flag
+                screen::updateTime(); //...actualitza el temps per pantalla.
+                
+                //...i fa saltar l'alarma si està activada i és el moment.
+                //TODO l'alarma pot indicar inhibir un canal diferent a l'actual. Ara mateix sempre'inhibeix tot l'espectre.
+                //TODO: això no funciona si es posa l'aparell en mode sleep
+                if(alarm.on == true && time.hh == alarm.hh && time.mm == alarm.mm)
+                {
+                    bluetooth::inhibir = true;
+                    screen::updateTopBarJam();
+                }
             }
         }
     }

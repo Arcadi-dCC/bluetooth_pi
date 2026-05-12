@@ -12,7 +12,7 @@ namespace menu{
         /* MENU1_GRAFIC_ESPECTRAL   */ { MENU1_CANALS_ACTIUS , GRAFIC_ESPECTRAL , NA , MENU2_CANVI_HORA , APAGAR , NA},
         /* MENU1_CANALS_ACTIUS      */ { MENU1_INHIBIR_MANUAL , CANAL_ACTIU_1 , NA , MENU2_CANVI_HORA , APAGAR , NA },
         /* MENU1_INHIBIR_MANUAL     */ { MENU1_INHIBIR_ESPECTRE , INHIBIR_MANUAL , NA , MENU2_CANVI_HORA , APAGAR , NA },
-        /* MENU1_INHIBIR_ESPECTRE   */ { MENU1_GRAFIC_ESPECTRAL , INHIBIR_ESPECTRE , NA , MENU2_CANVI_HORA , APAGAR , NA },
+        /* MENU1_INHIBIR_ESPECTRE   */ { MENU1_GRAFIC_ESPECTRAL , IN , NA , MENU2_CANVI_HORA , APAGAR , NA },
         
         /* GRAFIC_ESPECTRAL         */ { NA , NA , NA , MENU1_GRAFIC_ESPECTRAL , APAGAR , NA },
         /* CANAL_ACTIU_1            */ { CANAL_ACTIU_2 , INHIBIR_MANUAL , NA , MENU1_CANALS_ACTIUS , APAGAR , NA },
@@ -21,7 +21,7 @@ namespace menu{
         /* CANAL_ACTIU_4            */ { CANAL_ACTIU_5 , INHIBIR_MANUAL , NA , MENU1_CANALS_ACTIUS , APAGAR , NA },
         /* CANAL_ACTIU_5            */ { CANAL_ACTIU_1 , INHIBIR_MANUAL , NA , MENU1_CANALS_ACTIUS , APAGAR , NA },
         /* INHIBIR_MANUAL           */ { IN , IN , IN , MENU1_INHIBIR_MANUAL , APAGAR , NA },
-        /* INHIBIR_ESPECTRE         */ { NA , NA , NA , MENU1_INHIBIR_ESPECTRE , APAGAR , NA },
+        /* INHIBIR_ESPECTRE - UNUSED          { NA , NA , NA , MENU1_INHIBIR_ESPECTRE , APAGAR , NA }, */
 
         /* MENU2_CANVI_HORA         */ { MENU2_CANVI_ALARMA , HORA_ESPERA_HORA , NA , MENU1_GRAFIC_ESPECTRAL , APAGAR , NA },
         /* MENU2_CANVI_ALARMA       */ { MENU2_ACTIVAR_ALARMA , ALARMA_ESPERA_HORA , NA , MENU1_GRAFIC_ESPECTRAL , APAGAR , NA },
@@ -48,7 +48,7 @@ namespace menu{
         /* MENU1_GRAFIC_ESPECTRAL */    screen::print_MENU1_BLUETOOTH,
         /* MENU1_CANALS_ACTIUS */       screen::print_MENU1_BLUETOOTH,
         /* MENU1_INHIBIR_MANUAL */      screen::print_MENU1_BLUETOOTH,
-        /* MENU1_INHIBIR_ESPECTRE */    screen::print_MENU1_BLUETOOTH,
+        /* MENU1_INHIBIR_ESPECTRE */    toggleInhibir,
 
         /* GRAFIC_ESPECTRAL */          screen::print_GRAFIC_ESPECTRAL,
         /* CANAL_ACTIU_1 */             screen::print_CANALS_ACTIUS,
@@ -57,7 +57,7 @@ namespace menu{
         /* CANAL_ACTIU_4 */             screen::print_CANALS_ACTIUS,
         /* CANAL_ACTIU_5 */             screen::print_CANALS_ACTIUS,
         /* INHIBIR_MANUAL */            screen::print_INHIBIR_MAN,
-        /* INHIBIR_ESPECTRE */          toggleInhibir,
+        /* INHIBIR_ESPECTRE - UNUSED          toggleInhibir,*/
 
         /* MENU2_CANVI_HORA */          screen::print_MENU2_CLOCKS,
         /* MENU2_CANVI_ALARMA */        screen::print_MENU2_CLOCKS,

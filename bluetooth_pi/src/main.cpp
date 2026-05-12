@@ -26,11 +26,11 @@ void setup() {
     for(;;);
   }
 
-  /*if(bluetooth::init())
+  if(bluetooth::init())
   {
       Serial.println("Failed to initialize bluetooth!");
       for(;;);
-  }*/
+  }
 }
 
 void loop() {

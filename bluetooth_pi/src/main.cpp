@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <screen.h>
 #include <menu.h>
 #include <clocks.h>
 #include <buttons.h>
@@ -16,18 +17,20 @@ void setup() {
     Serial.println("Failed to initialize clock timer!");
       for(;;);
   }
+  
+  screen::config();
 
   if(buttons::init())
   {
-    Serial.println("Failed to initialize timer from buttons!");
+    Serial.println("Failed to initialize buttons timer!");
     for(;;);
   }
 
-  /*if(bluetooth::init())
+  if(bluetooth::init())
   {
       Serial.println("Failed to initialize bluetooth!");
       for(;;);
-  }*/
+  }
 }
 
 void loop() {

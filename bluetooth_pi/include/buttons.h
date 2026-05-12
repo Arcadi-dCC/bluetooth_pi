@@ -3,6 +3,9 @@
 
 #include <platformTypes.h>
 
+#define SWITCH_OPTION_TIME 5e6 //us. Per a submenus de canvi d'hora i alarma
+#define TIME_BETWEEN_INCREMENT 250e3 //us. Per incrementar valors d'hora i alarma mantenint el botó esquerre apretat.
+
 namespace buttons{
 
     enum Input{
@@ -19,6 +22,7 @@ namespace buttons{
     };
 
     uint8 init(void);
+    void restartTimer2Countdown(uint64 us);
     
     extern volatile Input input;
 

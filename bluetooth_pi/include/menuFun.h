@@ -16,7 +16,7 @@ namespace menu{
         CANAL_ACTIU_4,
         CANAL_ACTIU_5,
         INHIBIR_MANUAL,
-        INHIBIR_ESPECTRE,
+        /*INHIBIR_ESPECTRE, UNUSED  */
 
         MENU2_CANVI_HORA,
         MENU2_CANVI_ALARMA,
@@ -43,7 +43,10 @@ namespace menu{
 
     extern State state;
 
-    void modAlarma(void);
+    void toggleInhibir(void);
+    void toggleAlarma(void);
+    void alarmIncSingle(void);
+    void alarmIncMult(void);
     void fun(void);
 
 

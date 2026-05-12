@@ -73,6 +73,4 @@ namespace bluetooth{
         }
     }
 
-    void setInhibir(void){inhibir = true;}
-
 }; //namespace bluetooth

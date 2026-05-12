@@ -16,6 +16,8 @@ namespace screen{
     void print_MOD_ALARMA(void);
 
     void updateTime(void);
+    void updateTopBarAlarm(void);
+    void updateTopBarJam(void);
 
 }; //namespace screen
 

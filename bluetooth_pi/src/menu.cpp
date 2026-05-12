@@ -1,7 +1,6 @@
 #include <menu.h>
 #include <menuFun.h>
 #include <buttons.h>
-#include <bluetooth.h>
 #include <screen.h>
 #include <Arduino.h>
 
@@ -58,7 +57,7 @@ namespace menu{
         /* CANAL_ACTIU_4 */             screen::print_CANALS_ACTIUS,
         /* CANAL_ACTIU_5 */             screen::print_CANALS_ACTIUS,
         /* INHIBIR_MANUAL */            screen::print_INHIBIR_MAN,
-        /* INHIBIR_ESPECTRE */          bluetooth::setInhibir,
+        /* INHIBIR_ESPECTRE */          toggleInhibir,
 
         /* MENU2_CANVI_HORA */          screen::print_MENU2_CLOCKS,
         /* MENU2_CANVI_ALARMA */        screen::print_MENU2_CLOCKS,

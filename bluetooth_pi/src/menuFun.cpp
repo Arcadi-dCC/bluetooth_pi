@@ -3,10 +3,18 @@
 #include <clocks.h>
 #include <buttons.h>
 #include <screen.h>
+#include <bluetooth.h>
 
 namespace menu
 {
     State state = MENU1_GRAFIC_ESPECTRAL;
+
+    //Activa i desactiva el flag per inhibir canals bluetooth, i actualitza el seu estat a la barra superior.
+    void toggleInhibir(void)
+    {
+        bluetooth::inhibir = !bluetooth::inhibir;
+        screen::updateTopBarJam();
+    }
 
     //Activa i desactiva l'alarma
     void toggleAlarma(void)
@@ -17,7 +25,7 @@ namespace menu
         }
         buttons::input = buttons::RES;
         screen::print_MENU2_CLOCKS();
-        //TODO Canviar el signe de l'alarma
+        screen::updateTopBarAlarm();
     }
 
     //Imprimeix submenu de canvi d'hora o alarma per pantalla, Incrementa en 1 el valor actual si l'input és ESQ_CURT i

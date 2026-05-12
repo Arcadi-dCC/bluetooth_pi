@@ -11,14 +11,14 @@ void setup() {
   Serial.println("Serial COM Enabled");
 
   menu::init();
-  
-  screen::config();
 
   if(clocks::init())
   {
     Serial.println("Failed to initialize clock timer!");
       for(;;);
   }
+  
+  screen::config();
 
   if(buttons::init())
   {

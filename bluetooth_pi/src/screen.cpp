@@ -1,11 +1,17 @@
 #include <screen.h>
 #include <menuFun.h>
 #include <clocks.h>
+#include <bluetooth.h>
 
 #include <SPI.h>
 #include <TFT_eSPI.h>
 
-#define FONT_SIZE 4
+#define FONT 4
+#define FONT_SIZE 1
+
+#define TOPBAR_FONT 1
+#define TOPBAR_FONT_SIZE 2
+#define TOPBAR_THRESHOLD 16
 
 //Posicions Y per cada línia a mostrar a la pantalla
 #define LIN_SUP 40 //altura de la linia superior a la pantalla
@@ -40,9 +46,13 @@ namespace screen{
         screen.setRotation(2); //Mode vertical. Per girar 180º, passar 0 per parametre.
         screen.fillScreen(TFT_BLACK); //Pantalla en negre
         screen.setTextColor(TFT_WHITE); //Lletres en blanc
-        screen.setTextFont(FONT_SIZE);
+        screen.setTextFont(FONT);
+        screen.setTextSize(FONT_SIZE);
         pantalla = TOTAL_PANTALLES; //Per defecte en cap pantalla, per assegurar que dibuixarà un menu
         print_MENU1_BLUETOOTH();
+        updateTime();
+        updateTopBarAlarm();
+        updateTopBarJam();
     }
 
     //Recull per paràmetre la línia en la que es vol escriure (0, 1, 2, 3, 4)
@@ -180,8 +190,7 @@ namespace screen{
             screen.fillRect(MARGE, linia(0), TFT_WIDTH, TFT_HEIGHT, TFT_BLACK); //neteja la zona de les opcions
 
             screen.drawRect(MARGE, linia(0)-SUBMARGE, 155, 37, TFT_WHITE); //Rectangle decoratiu  al voltant de l'hora
-            screen.setCursor(MARGE+SUBMARGE, linia(0));
-            screen.printf("Hora - %d:%02d", clocks::time.hh, clocks::time.mm);
+            updateTime(); //escriu l'hora tan dins del requadre com a la topbar
 
             screen.drawString("Modificar", MARGE+2*SUBMARGE, linia(1));
 
@@ -196,9 +205,19 @@ namespace screen{
         cursor();
     }
 
-    //Actualitza el rellotge en pantalla que apareix al MENU 2 (rellotge)
+    //Actualitza els rellotges en pantalla, sempre a la barra superior i també al MENU 2 si s'està en aquesta pantalla.
     void updateTime(void)
     {
+        //1r: Actualització a barra superior.
+        screen.fillRect(0, 0, TFT_WIDTH/2, TOPBAR_THRESHOLD, TFT_BLACK);
+        screen.setCursor(0, 0);
+        screen.setTextSize(TOPBAR_FONT_SIZE); //Canvia temporalment a una lletra més petita
+        screen.setTextFont(TOPBAR_FONT);
+        screen.printf("%d:%02d", clocks::time.hh, clocks::time.mm);
+        screen.setTextSize(FONT_SIZE); //Torna al tamany i lletra original.
+        screen.setTextFont(FONT);
+
+        //2n: Actualització a menu 2, si escau.
         if(pantalla == MENU2_CLOCKS)
         {
             screen.fillRect(MARGE+1, linia(0)-SUBMARGE+1, 153, 35, TFT_BLACK);
@@ -231,6 +250,54 @@ namespace screen{
         screen.setCursor(MARGE, linia(2));
         screen.printf("Canal:  %d", clocks::alarm.ch);
         cursor();
+    }
+
+    //Mostra l'estat de l'alarma (on-verd / off-vermell) a la barra superior
+    void updateTopBarAlarm(void)
+    {
+        screen.fillRect(175, 0, 35, TOPBAR_THRESHOLD, TFT_BLACK);
+        
+        //Selecciona el color del text segons l'estat de l'alarma
+        if(clocks::alarm.on == true)
+        {
+            screen.setTextColor(TFT_GREEN);
+        }
+        else
+        {
+            screen.setTextColor(TFT_RED);
+        }
+        screen.setTextSize(TOPBAR_FONT_SIZE); //Canvia temporalment a una lletra més petita
+        screen.setTextFont(TOPBAR_FONT);
+        
+        screen.drawString("AL", 175, 0);
+        
+        screen.setTextColor(TFT_WHITE); //Retorna al color original
+        screen.setTextSize(FONT_SIZE); //Torna al tamany i lletra original.
+        screen.setTextFont(FONT);
+    }
+
+    //Mostra si es permet l'ús de bluetooth (sí-verd / no-vermell) a la barra superior
+    void updateTopBarJam(void)
+    {
+        screen.fillRect(215, 0, 30, TOPBAR_THRESHOLD, TFT_BLACK);
+        
+        //Selecciona el color del text segons l'estat de l'inhibidor
+        if(bluetooth::inhibir == false)
+        {
+            screen.setTextColor(TFT_GREEN);
+        }
+        else
+        {
+            screen.setTextColor(TFT_RED);
+        }
+        screen.setTextSize(TOPBAR_FONT_SIZE); //Canvia temporalment a una lletra més petita
+        screen.setTextFont(TOPBAR_FONT);
+        
+        screen.drawString("BT", 215, 0);
+        
+        screen.setTextColor(TFT_WHITE); //Retorna al color original
+        screen.setTextSize(FONT_SIZE); //Torna al tamany i lletra original.
+        screen.setTextFont(FONT);
     }
 
 }; //namespace screen

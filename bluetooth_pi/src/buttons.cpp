@@ -164,7 +164,12 @@ namespace buttons{
     //Rutina de servei a la interrupció pel timer 2. Han passat SWITCH_OPTION_TIME us. Activa l'input TIMER per fer moure la FSM.
     void IRAM_ATTR timer2ISR(void)
     {
-        input = TIMER;
+        if(input == RES)
+        {
+            input = TIMER; //actualitzem input a timer només si no hi ha cap altra entrada pendent.
+            //Evita que ESQ_SOLTAR es reescrigui amb TIMER, i per tant que de vegades l'hora, minut... canviat automàticament ho segueixi fent...
+            //...un cop soltat el botó.
+        }
     }
 
 

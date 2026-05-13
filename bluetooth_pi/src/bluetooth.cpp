@@ -33,16 +33,7 @@ namespace bluetooth{
 
         //OK
         delay(300);
-        radio.setAutoAck(false);       // Disable automatic acknowledgment
-        radio.stopListening();         // Set to transmitter mode
-        radio.setRetries(0, 0);        // Disable retries
-        radio.setPayloadSize(5);       // Set payload size to 5 bytes
-        radio.setAddressWidth(3);      // Set address width to 3 bytes
-        radio.setPALevel(RF24_PA_MAX, true); // Set power amplification to maximum
-        radio.setDataRate(RF24_2MBPS); // Set data rate to 2 Mbps
-        radio.setCRCLength(RF24_CRC_DISABLED); // Disable CRC
-        radio.startConstCarrier(RF24_PA_MAX, BT_INITIAL_CH);  // Start continuous carrier in channel 0
-        //radio.powerDown(); //estalvia energia
+        radio.powerDown(); //estalvia energia
         //radio.printPrettyDetails();    // Print radio details for debugging
         return 0;
     }
@@ -55,8 +46,17 @@ namespace bluetooth{
             case START_JAM:
             {
                 //Posa en marxa el mòdul Bluetooth
-                //radio.powerUp();
+                radio.powerUp();
+                radio.setAutoAck(false);       // Disable automatic acknowledgment
+                radio.stopListening();         // Set to transmitter mode
+                radio.setRetries(0, 0);        // Disable retries
+                radio.setPayloadSize(5);       // Set payload size to 5 bytes
+                radio.setAddressWidth(3);      // Set address width to 3 bytes
+                radio.setPALevel(RF24_PA_MAX, true); // Set power amplification to maximum
+                radio.setDataRate(RF24_2MBPS); // Set data rate to 2 Mbps
+                radio.setCRCLength(RF24_CRC_DISABLED); // Disable CRC
 
+                radio.startConstCarrier(RF24_PA_MAX, BT_INITIAL_CH);  // Start continuous carrier in channel 0
 
                 action = JAMMING;
             }
@@ -71,7 +71,7 @@ namespace bluetooth{
             }
             case STOP_JAM:
             {
-                //radio.stopConstCarrier(); //això posa el mòdul en sleep
+                radio.stopConstCarrier(); //això posa el mòdul en sleep
                 action = OFF;
                 break;
             }

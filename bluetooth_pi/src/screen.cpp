@@ -282,14 +282,23 @@ namespace screen{
         screen.fillRect(215, 0, 30, TOPBAR_THRESHOLD, TFT_BLACK);
         
         //Selecciona el color del text segons l'estat de l'inhibidor
-        if(bluetooth::inhibir == false)
-        {
-            screen.setTextColor(TFT_GREEN);
+        switch (bluetooth::action){
+                case bluetooth::START_JAM:
+                case bluetooth::JAMMING:
+                {
+                    screen.setTextColor(TFT_RED);
+                    break;
+                }
+                case bluetooth::STOP_JAM:
+                case bluetooth::OFF:
+                {
+                    screen.setTextColor(TFT_GREEN);
+                    break;
+                }
+                default: {/*Do nothing*/}
         }
-        else
-        {
-            screen.setTextColor(TFT_RED);
-        }
+
+
         screen.setTextSize(TOPBAR_FONT_SIZE); //Canvia temporalment a una lletra més petita
         screen.setTextFont(TOPBAR_FONT);
         

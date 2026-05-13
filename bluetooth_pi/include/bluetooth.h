@@ -7,9 +7,17 @@ namespace bluetooth{
 
     uint8 init(void);
     
-    void inhibEsp(void);
+    void jamMgr(void);
 
-    extern bool inhibir;
+    enum Action{
+
+        START_JAM = 0,
+        JAMMING,
+        STOP_JAM,
+        OFF
+    };
+
+    extern Action action;
 
 }; //namespace bluetooth
 

@@ -83,11 +83,11 @@ namespace clocks
                 screen::updateTime(); //...actualitza el temps per pantalla.
                 
                 //...i fa saltar l'alarma si està activada i és el moment.
-                //TODO l'alarma pot indicar inhibir un canal diferent a l'actual. Ara mateix sempre'inhibeix tot l'espectre.
+                //TODO L'alarma només hauria de poder inhibir tot l'espectre.
                 //TODO: això no funciona si es posa l'aparell en mode sleep
-                if(alarm.on == true && time.hh == alarm.hh && time.mm == alarm.mm)
+                if(alarm.on == true && time.hh == alarm.hh && time.mm == alarm.mm && (bluetooth::action == bluetooth::STOP_JAM || bluetooth::action == bluetooth::OFF))
                 {
-                    bluetooth::inhibir = true;
+                    bluetooth::action = bluetooth::START_JAM;
                     screen::updateTopBarJam();
                 }
             }

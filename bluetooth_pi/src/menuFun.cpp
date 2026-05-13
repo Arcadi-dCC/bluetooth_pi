@@ -9,12 +9,26 @@ namespace menu
 {
     State state = MENU1_GRAFIC_ESPECTRAL;
 
-    //Activa i desactiva el flag per inhibir canals bluetooth, i actualitza el seu estat a la barra superior.
+    //Mana iniciar o parar l'inhibició depenent del seu estat actual, i actualitza el seu estat a la barra superior.
     void toggleInhibir(void)
     {
         if(buttons::input == buttons::ESQ_LLARG)
         {
-            bluetooth::inhibir = !bluetooth::inhibir;
+            switch (bluetooth::action){
+                case bluetooth::START_JAM:
+                case bluetooth::JAMMING:
+                {
+                    bluetooth::action = bluetooth::STOP_JAM;
+                    break;
+                }
+                case bluetooth::STOP_JAM:
+                case bluetooth::OFF:
+                {
+                    bluetooth::action = bluetooth::START_JAM;
+                    break;
+                }
+                default: {/*Do nothing*/}
+            }
         }
         buttons::input = buttons::RES;
         screen::print_MENU1_BLUETOOTH(); //Imprimeix cursor

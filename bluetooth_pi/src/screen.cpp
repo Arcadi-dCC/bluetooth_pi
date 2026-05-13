@@ -2,6 +2,7 @@
 #include <menuFun.h>
 #include <clocks.h>
 #include <bluetooth.h>
+#include <buttons.h>
 
 #include <SPI.h>
 #include <TFT_eSPI.h>
@@ -143,15 +144,19 @@ namespace screen{
         {
             pantalla = GRAFIC_ESPECTRAL;
             screen.fillRect(0, linia(0), TFT_WIDTH, TFT_HEIGHT, TFT_BLACK); //neteja el cursor i la zona de les opcions
-            
-            uint8 activitat[BT_TOTAL_CHANNELS];
-            bluetooth::activitatEspectre(activitat, BT_TOTAL_CHANNELS);
-            screen.setCursor(MARGE, linia(0));
-            for(uint8 i=0; i<BT_TOTAL_CHANNELS; i++)
+
+            uint8 val = 1;
+
+            do
             {
-                screen.fillRect(i*3, linia(0), 3, activitat[i]+1, TFT_WHITE);
-            }
-            
+                for(uint8 i=0; i<BT_TOTAL_CHANNELS; i++)
+                {
+                    if(buttons::input == buttons::DRE_CURT) break;
+                    screen.fillRect(i*3, linia(4)-BT_NUM_READINGS*2, 3, BT_NUM_READINGS*2, TFT_BLACK);
+                    val = 2*bluetooth::activitatEspectre(i)+1; //per fer més visible al gràfic
+                    screen.fillRect(i*3, linia(4)-val, 3, val, TFT_WHITE);
+                }
+            }while(buttons::input != buttons::DRE_CURT);
         }
     }
 

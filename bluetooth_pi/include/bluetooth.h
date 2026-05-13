@@ -5,11 +5,13 @@
 
 #define BT_TOTAL_CHANNELS 79 //número de canals bluetooth
 
+#define BT_NUM_READINGS 100 //repeticions a fer durant la detecció d'activitat
+
 namespace bluetooth{
 
     uint8 init(void);
     void jamMgr(void);
-    uint8 activitatEspectre(uint8* buf, uint8 len);
+    uint8 activitatEspectre(uint8 canal);
 
     enum Action{
 

@@ -11,12 +11,14 @@
 
 #define BT_CE 38
 
+#define BT_INITIAL_CH 45 //0 does not work
+
 namespace bluetooth{
 
     SPIClass hspi;
     RF24 radio(BT_CE, BT_CS); // the (ce_pin, csn_pin) connected to the radio
     
-    byte ch = 45;  // Initial channel for nRF24L01
+    uint8 ch = 0;  // Initial channel for nRF24L01. 0 does not work
     Action action = OFF;
 
     //inicia el mòdul bluetooth
@@ -26,7 +28,7 @@ namespace bluetooth{
         hspi.begin(BT_SCLK, BT_MISO, BT_MOSI, BT_CS);
 
         action = OFF;
-        ch = 45;
+        ch = 0;
         if (!radio.begin(&hspi)) return 1; //error
 
         //OK
@@ -39,7 +41,7 @@ namespace bluetooth{
         radio.setPALevel(RF24_PA_MAX, true); // Set power amplification to maximum
         radio.setDataRate(RF24_2MBPS); // Set data rate to 2 Mbps
         radio.setCRCLength(RF24_CRC_DISABLED); // Disable CRC
-        radio.startConstCarrier(RF24_PA_MAX, ch);  // Start continuous carrier in channel 0
+        radio.startConstCarrier(RF24_PA_MAX, BT_INITIAL_CH);  // Start continuous carrier in channel 0
         //radio.powerDown(); //estalvia energia
         //radio.printPrettyDetails();    // Print radio details for debugging
         return 0;

@@ -143,6 +143,15 @@ namespace screen{
         {
             pantalla = GRAFIC_ESPECTRAL;
             screen.fillRect(0, linia(0), TFT_WIDTH, TFT_HEIGHT, TFT_BLACK); //neteja el cursor i la zona de les opcions
+            
+            uint8 activitat[BT_TOTAL_CHANNELS];
+            bluetooth::activitatEspectre(activitat, BT_TOTAL_CHANNELS);
+            screen.setCursor(MARGE, linia(0));
+            for(uint8 i=0; i<BT_TOTAL_CHANNELS; i++)
+            {
+                screen.fillRect(i*3, linia(0), 3, activitat[i]+1, TFT_WHITE);
+            }
+            
         }
     }
 

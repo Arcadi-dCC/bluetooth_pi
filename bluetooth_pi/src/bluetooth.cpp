@@ -12,6 +12,8 @@
 
 #define BT_INITIAL_CH 45 //0 does not work
 
+#define NUM_READINGS 100 //repeticions a fer durant la detecció d'activitat
+
 namespace bluetooth{
 
     SPIClass hspi;
@@ -54,7 +56,7 @@ namespace bluetooth{
             case JAMMING:
             {
                 //Sweep through all 79 channels (0 to 78)
-                for(ch = 0; ch < 79; ch++) {radio.setChannel(ch);}
+                for(ch = 0; ch < BT_TOTAL_CHANNELS; ch++) {radio.setChannel(ch);}
 
                 // Specifically target BLE advertising channels (37, 38, 39) for good measure
                 for(ch = 37; ch < 40; ch++) radio.setChannel(ch);
@@ -71,6 +73,46 @@ namespace bluetooth{
                 /*Do nothing*/
             }
         }
+    }
+
+    //Posa el mòdul bluetooth en mode lectura i fa NUM_READINGS lectures a tots els canals de l'espectre en busca de senyals
+    //Cada cop que troba un senyal a un canal X, augmenta en 1 el valor del membre X de buf.
+    //Return: 0-OK 1-l'array passat pe paràmetre és massa petit. 
+    uint8 activitatEspectre(uint8* buf, uint8 len)
+    {
+        if(len < BT_TOTAL_CHANNELS)
+        {
+            return 1;
+        }
+
+        uint8 i = 0;
+        uint8 t = 0;
+
+        //Configura i posa el mòdul BT en mode RX
+        radio.setPALevel(RF24_PA_MAX);
+        radio.setAutoAck(false);
+        radio.disableCRC();
+        radio.setPayloadSize(1);
+        radio.setChannel(0);
+        radio.startListening();
+        action = OFF;
+
+        for (uint8 i = 0; i<BT_TOTAL_CHANNELS; i++)
+        {
+            buf[i] = 0; //reiniciem cada compte a 0.
+            radio.setChannel(i);
+            radio.startListening();
+            delay(130); //Deixa al mòdul fer els canvis pertinents
+            for(t=0; t<NUM_READINGS; t++)
+            {
+                if(radio.testRPD()) buf[i]++;
+            }
+            radio.stopListening();
+            Serial.print(buf[i]);
+            Serial.print(",");
+        }
+        Serial.println();
+        return 0;
     }
 
 }; //namespace bluetooth

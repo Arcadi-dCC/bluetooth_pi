@@ -3,15 +3,17 @@
 #include "RF24.h"
 #include <SPI.h>
 
-#define MY_MISO 13
-#define MY_MOSI 11
-#define MY_SCLK 12
-#define MY_SS   10  // pass MY_SS as the csn_pin parameter to the RF24 constructor
+#define BT_CS   39  // pass as the csn_pin parameter to the RF24 constructor
+#define BT_MISO 37
+#define BT_MOSI 35
+#define BT_SCLK 36
+
+#define BT_CE 9
 
 namespace bluetooth{
 
     // notice these pin numbers are not the same used in the library examples
-    RF24 radio(9, 10); // the (ce_pin, csn_pin) connected to the radio
+    RF24 radio(BT_CE, BT_CS); // the (ce_pin, csn_pin) connected to the radio
 
     SPIClass* hspi = nullptr; // we'll instantiate this in the `setup()` function
     // by default the HSPI bus pre-defines the following pins
@@ -30,7 +32,7 @@ namespace bluetooth{
     uint8 init(void)
     {
         hspi = new SPIClass(); // by default VSPI is used
-        hspi->begin(MY_SCLK, MY_MISO, MY_MOSI, MY_SS);
+        hspi->begin(BT_SCLK, BT_MISO, BT_MOSI, BT_CS);
 
         if (!radio.begin(hspi)) return 1; //error
 
@@ -44,7 +46,7 @@ namespace bluetooth{
         radio.setPALevel(RF24_PA_MAX, true); // Set power amplification to maximum
         radio.setDataRate(RF24_2MBPS); // Set data rate to 2 Mbps
         radio.setCRCLength(RF24_CRC_DISABLED); // Disable CRC
-        radio.printPrettyDetails();    // Print radio details for debugging
+        //radio.printPrettyDetails();    // Print radio details for debugging
         radio.startConstCarrier(RF24_PA_MAX, i);  // Start continuous carrier with specified channel
 
         inhibir = false;

@@ -1,5 +1,4 @@
 #include <bluetooth.h>
-#include <platformTypes.h>
 
 #include "RF24.h"
 #include <SPI.h>
@@ -33,6 +32,7 @@ namespace bluetooth{
 
         //OK
         delay(300);
+        radio.setDataRate(RF24_2MBPS); // Set data rate to 2 Mbps
         radio.powerDown(); //estalvia energia
         //radio.printPrettyDetails();    // Print radio details for debugging
         return 0;
@@ -47,11 +47,7 @@ namespace bluetooth{
             {
                 //Posa en marxa el mòdul Bluetooth
                 radio.powerUp();
-                radio.setPayloadSize(5);       // Set payload size to 5 bytes
-                radio.setAddressWidth(3);      // Set address width to 3 bytes
-                radio.setDataRate(RF24_2MBPS); // Set data rate to 2 Mbps
-
-                radio.startConstCarrier(RF24_PA_MAX, BT_INITIAL_CH);  // Start continuous carrier in channel 0
+                radio.startConstCarrier(RF24_PA_MAX, BT_INITIAL_CH);  // Start continuous carrier in BT_INITIAL_CH
 
                 action = JAMMING;
             }
@@ -60,7 +56,7 @@ namespace bluetooth{
                 //Sweep through all 79 channels (0 to 78)
                 for(ch = 0; ch < 79; ch++) {radio.setChannel(ch);}
 
-                // Specifically target BLE advertising channels (37, 38, 39)
+                // Specifically target BLE advertising channels (37, 38, 39) for good measure
                 for(ch = 37; ch < 40; ch++) radio.setChannel(ch);
                 break;
             }

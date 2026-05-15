@@ -9,16 +9,66 @@ namespace menu
 {
     State state = MENU1_GRAFIC_ESPECTRAL;
 
-    //Activa i desactiva el flag per inhibir canals bluetooth, i actualitza el seu estat a la barra superior.
+    //Mana parar l'inhibicio de Bluetooth si està activa, i dona instruccions per iniciar el gràfic espectral o la llista de canals més actius
+    void beginAnalisiEsp(void)
+    {
+        if(bluetooth::action == bluetooth::START_JAM || bluetooth::action == bluetooth::JAMMING)
+        {
+            bluetooth::action = bluetooth::STOP_JAM;
+        }
+
+        screen::clearMainScreen();
+
+        switch(state)
+        {
+            case GRAFIC_ESPECTRAL:
+            {
+                screen::pantalla = screen::GRAFIC_ESPECTRAL;
+                break;
+            }
+            case CANAL_ACTIU_1:
+            case CANAL_ACTIU_2:
+            case CANAL_ACTIU_3:
+            case CANAL_ACTIU_4:
+            case CANAL_ACTIU_5:
+            {
+                screen::pantalla = screen::CANALS_ACTIUS;
+                for(uint8 i=0; i<5; i++)
+                {
+                    screen::intensitats[i] = 0;
+                    screen::canals_actius[i] = 0;
+                }
+                screen::printNoActius();
+                break;
+            }
+            default:{/*Do nothing*/break;}
+        }
+    }
+
+    //Mana iniciar o parar l'inhibició depenent del seu estat actual.
     void toggleInhibir(void)
     {
         if(buttons::input == buttons::ESQ_LLARG)
         {
-            bluetooth::inhibir = !bluetooth::inhibir;
+            switch (bluetooth::action){
+                case bluetooth::START_JAM:
+                case bluetooth::JAMMING:
+                {
+                    bluetooth::action = bluetooth::STOP_JAM;
+                    break;
+                }
+                case bluetooth::STOP_JAM:
+                case bluetooth::READING:
+                case bluetooth::OFF:
+                {
+                    bluetooth::action = bluetooth::START_JAM;
+                    break;
+                }
+                default: {/*Do nothing*/}
+            }
         }
         buttons::input = buttons::RES;
         screen::print_MENU1_BLUETOOTH(); //Imprimeix cursor
-        screen::updateTopBarJam();
     }
 
     //Activa i desactiva l'alarma

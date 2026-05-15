@@ -43,6 +43,7 @@ namespace menu{
 
     extern State state;
 
+    void beginAnalisiEsp(void);
     void toggleInhibir(void);
     void toggleAlarma(void);
     void alarmIncSingle(void);

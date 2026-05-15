@@ -1,75 +1,130 @@
 #include <bluetooth.h>
+#include <screen.h>
 
 #include "RF24.h"
 #include <SPI.h>
 
-#define MY_MISO 13
-#define MY_MOSI 11
-#define MY_SCLK 12
-#define MY_SS   10  // pass MY_SS as the csn_pin parameter to the RF24 constructor
+#define BT_CS   39  // pass as the csn_pin parameter to the RF24 constructor
+#define BT_MISO 37
+#define BT_MOSI 35
+#define BT_SCLK 36
+
+#define BT_CE 38
+
+#define BT_INITIAL_CH 45 //0 does not work
 
 namespace bluetooth{
 
-    // notice these pin numbers are not the same used in the library examples
-    RF24 radio(9, 10); // the (ce_pin, csn_pin) connected to the radio
-
-    SPIClass* hspi = nullptr; // we'll instantiate this in the `setup()` function
-    // by default the HSPI bus pre-defines the following pins
-    // HSPI_MISO = 12
-    // HSPI_MOSI = 13
-    // HSPI_SCLK = 14
-    // HSPI_SS   = 15
-
-    byte i = 45;  // Initial channel for nRF24L01
-    unsigned int flag = 0;  // Flag to control channel hopping direction
-
-    bool inhibir = false; //flag per indicar si cal inhibir o no
+    SPIClass hspi;
+    RF24 radio(BT_CE, BT_CS); // the (ce_pin, csn_pin) connected to the radio
+    
+    uint8 ch = 0;
+    Action action = OFF;
 
     //inicia el mòdul bluetooth
     //Return: 0-OK 1-error
     uint8 init(void)
     {
-        hspi = new SPIClass(); // by default VSPI is used
-        hspi->begin(MY_SCLK, MY_MISO, MY_MOSI, MY_SS);
+        hspi.begin(BT_SCLK, BT_MISO, BT_MOSI, BT_CS);
 
-        if (!radio.begin(hspi)) return 1; //error
+        action = OFF;
+        ch = 0;
+        if (!radio.begin(&hspi)) return 1; //error
 
         //OK
         delay(300);
-        radio.setAutoAck(false);       // Disable automatic acknowledgment
-        radio.stopListening();         // Set to transmitter mode
-        radio.setRetries(0, 0);        // Disable retries
-        radio.setPayloadSize(5);       // Set payload size to 5 bytes
-        radio.setAddressWidth(3);      // Set address width to 3 bytes
-        radio.setPALevel(RF24_PA_MAX, true); // Set power amplification to maximum
         radio.setDataRate(RF24_2MBPS); // Set data rate to 2 Mbps
-        radio.setCRCLength(RF24_CRC_DISABLED); // Disable CRC
-        radio.printPrettyDetails();    // Print radio details for debugging
-        radio.startConstCarrier(RF24_PA_MAX, i);  // Start continuous carrier with specified channel
-
-        inhibir = false;
-
+        radio.startConstCarrier(RF24_PA_MAX, BT_INITIAL_CH);  // Start continuous carrier in BT_INITIAL_CH. Millora la configuració interna
+        radio.stopConstCarrier(); //això posa el mòdul en sleep
+        //radio.printPrettyDetails();    // Print radio details for debugging
         return 0;
     }
 
-    //inhibieix tot l'especte bluetooth si el flag "inhibir" està aixecat
-    void inhibEsp(void) //AVIS: si el bluetooth no s'inhibiex com abans, pot ser perquè això no s'està executant el 100% del temps
+    //Envia comandes al modul Bluetooth per inhibir o no inhibir, depenent de l'estat de "action", i actualitza l'estat a la barra superior.
+    void jamMgr(void)
     {
-        if(inhibir == true)
+        switch(action)
         {
-            // Sweep through all channels (0 to 79)
-            for (int i = 0; i < 79; i++)
+            case START_JAM:
             {
-            radio.setChannel(i);
-            //Serial.println("Jamming channel:");
-            //Serial.println(i);
-            }
+                //Posa en marxa el mòdul Bluetooth
+                radio.powerUp();
+                radio.startConstCarrier(RF24_PA_MAX, BT_INITIAL_CH);  // Start continuous carrier in BT_INITIAL_CH
 
-            // Specifically target BLE advertising channels (37, 38, 39)
-            byte ble_channels[] = {37, 38, 39};
-            for (int j = 0; j < 3; j++) {
-            radio.setChannel(ble_channels[j]);
+                action = JAMMING;
+                screen::updateTopBarJam();
             }
+            case JAMMING:
+            {
+                //Sweep through all 79 channels (0 to 78)
+                for(ch = 0; ch < BT_TOTAL_CHANNELS; ch++) {radio.setChannel(ch);}
+
+                // Specifically target BLE advertising channels (37, 38, 39) for good measure
+                for(ch = 37; ch < 40; ch++) radio.setChannel(ch);
+                break;
+            }
+            case STOP_JAM:
+            {
+                radio.stopConstCarrier(); //això posa el mòdul en sleep
+                action = OFF;
+                screen::updateTopBarJam();
+                break;
+            }
+            default: {/*Do nothing*/break;}
+        }
+    }
+
+    //Posa el mòdul Bluetooth en mode lectura i analitza un canal cada vegada
+    //Depenent de quina pantalla s'estigui mostrant, imprimeix l'informació per pantalla amb dues funcions diferents
+    void readMgr(void)
+    {
+        if(screen::pantalla == screen::GRAFIC_ESPECTRAL || screen::pantalla == screen::CANALS_ACTIUS)
+        {
+            //Posa en marxa l'antena si està apagada
+            switch (action)
+            {
+                case OFF: //Posa en marxa l'antena si està apagada
+                {
+                    action = READING;
+                    radio.setPayloadSize(1);
+                    ch = BT_TOTAL_CHANNELS; //Per començar amb el canal 0 (veure següent línia de codi)
+                }
+                case READING:
+                {
+                    ch = (ch + 1) % BT_TOTAL_CHANNELS;
+            
+                    radio.setChannel(ch);
+                    radio.startListening();
+                    delay(130); //Deixa al mòdul fer els canvis pertinents
+                        
+                    uint8 detections = 0;
+                        
+                    //Si detecta senyals per sobre de -64 dBm, registrar-les.
+                    for(uint8 t=0; t<BT_NUM_READINGS; t++)
+                    {
+                        if(radio.testRPD()) detections++;
+                    }
+                
+                    radio.stopListening();
+                
+                    switch(screen::pantalla)
+                    {
+                        case screen::GRAFIC_ESPECTRAL:
+                        {
+                            screen::print_GRAFIC_ESPECTRAL(ch, detections);
+                            break;
+                        }
+                        case screen::CANALS_ACTIUS:
+                        {
+                            screen::print_CANALS_ACTIUS(ch, detections);
+                            break;
+                        }
+                        default:{/*Do nothing*/break;}
+                    }
+                    break;
+                }
+                default: {/*Do nothing*/break;}
+            }   
         }
     }
 

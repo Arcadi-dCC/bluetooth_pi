@@ -50,12 +50,12 @@ namespace menu{
         /* MENU1_INHIBIR_MANUAL */      screen::print_MENU1_BLUETOOTH,
         /* MENU1_INHIBIR_ESPECTRE */    toggleInhibir,
 
-        /* GRAFIC_ESPECTRAL */          screen::print_GRAFIC_ESPECTRAL,
-        /* CANAL_ACTIU_1 */             screen::print_CANALS_ACTIUS,
-        /* CANAL_ACTIU_2 */             screen::print_CANALS_ACTIUS,
-        /* CANAL_ACTIU_3 */             screen::print_CANALS_ACTIUS,
-        /* CANAL_ACTIU_4 */             screen::print_CANALS_ACTIUS,
-        /* CANAL_ACTIU_5 */             screen::print_CANALS_ACTIUS,
+        /* GRAFIC_ESPECTRAL */          beginAnalisiEsp,
+        /* CANAL_ACTIU_1 */             beginAnalisiEsp,
+        /* CANAL_ACTIU_2 */             beginAnalisiEsp,
+        /* CANAL_ACTIU_3 */             beginAnalisiEsp,
+        /* CANAL_ACTIU_4 */             beginAnalisiEsp,
+        /* CANAL_ACTIU_5 */             beginAnalisiEsp,
         /* INHIBIR_MANUAL */            screen::print_INHIBIR_MAN,
         /* INHIBIR_ESPECTRE - UNUSED          toggleInhibir,*/
 

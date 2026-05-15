@@ -2,6 +2,7 @@
 #include <menuFun.h>
 #include <clocks.h>
 #include <bluetooth.h>
+#include <buttons.h>
 
 #include <SPI.h>
 #include <TFT_eSPI.h>
@@ -22,20 +23,6 @@
 namespace screen{
 
     TFT_eSPI screen = TFT_eSPI();
-
-    //Totes les pantalles que poden ser imprimides
-    enum Pantalla{
-        MENU1_BLUETOOTH,
-        GRAFIC_ESPECTRAL,
-        CANALS_ACTIUS,
-        INHIBIR_MAN,
-
-        MENU2_CLOCKS,
-        MOD_RELLOTGE,
-        MOD_ALARMA,
-
-        TOTAL_PANTALLES
-    };
 
     Pantalla pantalla = TOTAL_PANTALLES; //indica pantalla mostrada actualment
 
@@ -121,9 +108,18 @@ namespace screen{
         screen.fillTriangle(0,y,0,y+20,17,y+10, TFT_WHITE);
     }
 
+    //Esborra el contingut de tota la pantalla, incloent el cursor, excepte la barra superior
+    void clearMainScreen(void){
+        screen::screen.fillRect(0, linia(0)-SUBMARGE, TFT_WIDTH, TFT_HEIGHT, TFT_BLACK);
+    }
+
     //Imprimeix per pantalla el menu 1 (bluetooth).
     void print_MENU1_BLUETOOTH(void)
     {
+        if(bluetooth::action == bluetooth::READING)
+        {
+            bluetooth::action == bluetooth::STOP_JAM; //Apaga el mòdul bluetooth si s'entra aquí després d'analitzar l'espectre
+        }
         if(pantalla != MENU1_BLUETOOTH)
         {
             pantalla = MENU1_BLUETOOTH;
@@ -136,39 +132,79 @@ namespace screen{
         cursor();
     }
 
-    //Imprimeix er pantalla el gràfic espectral.
-    void print_GRAFIC_ESPECTRAL(void)
+    //Actualitza per pantalla el gràfic espectral amb la informació del canal i la seva intensitat passats per paràmetre
+    void print_GRAFIC_ESPECTRAL(uint8 canal, uint8 intensitat)
     {
-        if(pantalla != GRAFIC_ESPECTRAL)
+        screen.fillRect(canal*3, linia(4)-BT_NUM_READINGS*2, 3, TFT_HEIGHT, TFT_BLACK); //neteja la columna del canal actual
+        uint8 i = 2*intensitat+1; //per fer el gràfic més visible
+        screen.fillRect(canal*3, linia(4)-i, 3, i, TFT_WHITE);
+
+        //Dibuixem un petit rectangle a la posició del següent canal per indicar per on va l'escanneig.
+        i = ((canal + 1) % BT_TOTAL_CHANNELS) * 3;
+        screen.fillRect(i, linia(4)+10, 3, 6, TFT_WHITE);
+    }
+
+
+    //Arrays per imprimir els canals més actius
+    uint8 canals_actius[5] = {0,0,0,0,0};
+    uint8 intensitats[5] = {0,0,0,0,0}; //intensitats o forces dels senyals, ordenades de més gran [0] a més petita [4]
+
+    //Actualitza per pantalla una llista amb els canals més actius i la seva intensitat.
+    void print_CANALS_ACTIUS(uint8 ch, uint8 inte)
+    {
+
+        uint8 i = 0;
+        bool multiflag = false; //flag per indicar si el canal ja estava a la llista, i també si cal actualitzar la pantalla.
+
+        //1. Comprovar si el canal actual està a la llista. En cas afirmatiu, actualitzar la seva intensitat
+        for (i=0; i<5; i++)
         {
-            pantalla = GRAFIC_ESPECTRAL;
-            screen.fillRect(0, linia(0), TFT_WIDTH, TFT_HEIGHT, TFT_BLACK); //neteja el cursor i la zona de les opcions
+            if(canals_actius[i] == ch)
+            {
+                multiflag = true;
+                intensitats[i] = inte;
+                break; //i es queda amb la posició del canal actualitzat
+            }
+        }
+
+        //En cas negatiu, si hi ha activitat i és superior a la més petita present, substituir canal i activitat a la seva posició
+        if(multiflag == false && inte > 0)
+        {
+            uint8 inte_min = inte;
+            i = 5;
+            for(uint8 t=0; t<5; t++)
+            {
+                if(intensitats[t] < inte_min)
+                {
+                    inte_min = intensitats[t];
+                    i = t; //emprem i com a marcador de la posicio amb intensitat més baixa
+                }
+            }
+
+            if(i < 5) //hi ha al menys una intensitat menor
+            {
+                multiflag = true;
+                canals_actius[i] = ch;
+                intensitats[i] = inte;
+            }
+        }
+
+        //2. Si ha hagut canvis a canals_actius[] o intensitats[], imprimir el canvi per pantalla
+        if(multiflag == true)
+        {
+            screen::screen.fillRect(MARGE, linia(i), TFT_WIDTH, LIN_SEP, TFT_BLACK);
+            screen.setCursor(MARGE, linia(i));
+            screen.printf("Ch.%d", canals_actius[i]);
+            screen.setCursor(107, linia(i));
+            screen.printf("Forca %d%%", intensitats[i]);
         }
     }
 
-    //Imprimeix per pantalla una llista amb els canals més actius i el seu RSSI.
-    void print_CANALS_ACTIUS(void)
+    //Petita impressió per pantalla per indicar que no s'ha detectat cap senyal, abans de que se'n comencin a detectar durant CANALS_ACTIUS.
+
+    void printNoActius(void)
     {
-        if(pantalla != CANALS_ACTIUS)
-        {
-            pantalla = CANALS_ACTIUS;
-            screen.fillRect(MARGE, linia(0), TFT_WIDTH, TFT_HEIGHT, TFT_BLACK); //neteja la zona de les opcions
-
-            //Troba els canals actius i el seu RSSI
-            uint8 canal[5];
-            sint16 rssi[5];
-
-            //trucar funció de bluetooth per plenar arrays
-
-            for(uint8 i=0;i<5;i++)
-            {
-                screen.setCursor(MARGE, linia(i));
-                screen.printf("Ch.%d", canal[i]);
-                screen.setCursor(TFT_WIDTH/2, linia(i));
-                screen.printf("RSSI: %d", rssi[i]);
-            }
-        }
-        cursor();
+        screen.drawString("Cercant activitat...", MARGE, linia(0));
     }
 
     //Imprimeix per pantalla el selector manual de canals a inhibir.
@@ -282,14 +318,24 @@ namespace screen{
         screen.fillRect(215, 0, 30, TOPBAR_THRESHOLD, TFT_BLACK);
         
         //Selecciona el color del text segons l'estat de l'inhibidor
-        if(bluetooth::inhibir == false)
-        {
-            screen.setTextColor(TFT_GREEN);
+        switch (bluetooth::action){
+                case bluetooth::START_JAM:
+                case bluetooth::JAMMING:
+                {
+                    screen.setTextColor(TFT_RED);
+                    break;
+                }
+                case bluetooth::STOP_JAM:
+                case bluetooth::READING:
+                case bluetooth::OFF:
+                {
+                    screen.setTextColor(TFT_GREEN);
+                    break;
+                }
+                default: {/*Do nothing*/}
         }
-        else
-        {
-            screen.setTextColor(TFT_RED);
-        }
+
+
         screen.setTextSize(TOPBAR_FONT_SIZE); //Canvia temporalment a una lletra més petita
         screen.setTextFont(TOPBAR_FONT);
         

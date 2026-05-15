@@ -7,7 +7,7 @@
 
 void setup() {
   Serial.begin(115200); // Initialize serial communication
-  delay(800);
+  while(!Serial); //Esperem a que serial es configuri
   Serial.println("Serial COM Enabled");
 
   menu::init();
@@ -36,5 +36,6 @@ void setup() {
 void loop() {
   menu::stateMgr();
   clocks::timeMgr();
-  bluetooth::inhibEsp();
+  bluetooth::jamMgr();
+  bluetooth::readMgr();
 }

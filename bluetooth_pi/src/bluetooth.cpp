@@ -1,4 +1,5 @@
 #include <bluetooth.h>
+#include <screen.h>
 
 #include "RF24.h"
 #include <SPI.h>
@@ -17,7 +18,7 @@ namespace bluetooth{
     SPIClass hspi;
     RF24 radio(BT_CE, BT_CS); // the (ce_pin, csn_pin) connected to the radio
     
-    uint8 ch = 0;  // Initial channel for nRF24L01. 0 does not work
+    uint8 ch = 0;
     Action action = OFF;
 
     //inicia el mòdul bluetooth
@@ -33,12 +34,13 @@ namespace bluetooth{
         //OK
         delay(300);
         radio.setDataRate(RF24_2MBPS); // Set data rate to 2 Mbps
-        radio.powerDown(); //estalvia energia
+        radio.startConstCarrier(RF24_PA_MAX, BT_INITIAL_CH);  // Start continuous carrier in BT_INITIAL_CH. Millora la configuració interna
+        radio.stopConstCarrier(); //això posa el mòdul en sleep
         //radio.printPrettyDetails();    // Print radio details for debugging
         return 0;
     }
 
-    //Envia comandes al modul Bluetooth per inhibir o no inhibir, depenent de l'estat de "action".
+    //Envia comandes al modul Bluetooth per inhibir o no inhibir, depenent de l'estat de "action", i actualitza l'estat a la barra superior.
     void jamMgr(void)
     {
         switch(action)
@@ -50,6 +52,7 @@ namespace bluetooth{
                 radio.startConstCarrier(RF24_PA_MAX, BT_INITIAL_CH);  // Start continuous carrier in BT_INITIAL_CH
 
                 action = JAMMING;
+                screen::updateTopBarJam();
             }
             case JAMMING:
             {
@@ -64,38 +67,65 @@ namespace bluetooth{
             {
                 radio.stopConstCarrier(); //això posa el mòdul en sleep
                 action = OFF;
+                screen::updateTopBarJam();
                 break;
             }
-            default:
-            {
-                /*Do nothing*/
-            }
+            default: {/*Do nothing*/break;}
         }
     }
 
-    //Posa el mòdul bluetooth en mode lectura i fa NUM_READINGS lectures a tots els canals de l'espectre en busca de senyals
-    //Cada cop que troba un senyal a un canal X, augmenta en 1 el valor del membre X de buf.
-    //Return: 0-OK 1-l'array passat pe paràmetre és massa petit. 
-    uint8 activitatEspectre(uint8 canal)
+    //Posa el mòdul Bluetooth en mode lectura i analitza un canal cada vegada
+    //Depenent de quina pantalla s'estigui mostrant, imprimeix l'informació per pantalla amb dues funcions diferents
+    void readMgr(void)
     {
-        uint8 ctr = 0;
-
-        //Configura i posa el mòdul BT en mode RX
-        radio.setPALevel(RF24_PA_MAX);
-        radio.setAutoAck(false);
-        radio.disableCRC();
-        radio.setPayloadSize(1);
-        radio.setChannel(canal);
-        radio.startListening();
-        action = OFF;
-
-        delay(130); //Deixa al mòdul fer els canvis pertinents
-        for(uint8 t=0; t<BT_NUM_READINGS; t++)
+        if(screen::pantalla == screen::GRAFIC_ESPECTRAL || screen::pantalla == screen::CANALS_ACTIUS)
         {
-            if(radio.testRPD()) ctr++;
+            //Posa en marxa l'antena si està apagada
+            switch (action)
+            {
+                case OFF: //Posa en marxa l'antena si està apagada
+                {
+                    action = READING;
+                    radio.setPayloadSize(1);
+                    ch = BT_TOTAL_CHANNELS; //Per començar amb el canal 0 (veure següent línia de codi)
+                }
+                case READING:
+                {
+                    ch = (ch + 1) % BT_TOTAL_CHANNELS;
+            
+                    radio.setChannel(ch);
+                    radio.startListening();
+                    delay(130); //Deixa al mòdul fer els canvis pertinents
+                        
+                    uint8 detections = 0;
+                        
+                    //Si detecta senyals per sobre de -64 dBm, registrar-les.
+                    for(uint8 t=0; t<BT_NUM_READINGS; t++)
+                    {
+                        if(radio.testRPD()) detections++;
+                    }
+                
+                    radio.stopListening();
+                
+                    switch(screen::pantalla)
+                    {
+                        case screen::GRAFIC_ESPECTRAL:
+                        {
+                            screen::print_GRAFIC_ESPECTRAL(ch, detections);
+                            break;
+                        }
+                        /*case screen::CANALS_ACTIUS:
+                        {
+                            screen::print_CANALS_ACTIUS(ch, detections);
+                            break;
+                        }*/
+                        default:{/*Do nothing*/break;}
+                    }
+                    break;
+                }
+                default: {/*Do nothing*/break;}
+            }   
         }
-        radio.stopListening();
-        return ctr;
     }
 
 }; //namespace bluetooth

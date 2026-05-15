@@ -5,11 +5,29 @@
 
 namespace screen{
 
+    //Totes les pantalles que poden ser imprimides
+    enum Pantalla{
+        MENU1_BLUETOOTH,
+        GRAFIC_ESPECTRAL,
+        CANALS_ACTIUS,
+        INHIBIR_MAN,
+
+        MENU2_CLOCKS,
+        MOD_RELLOTGE,
+        MOD_ALARMA,
+
+        TOTAL_PANTALLES
+    };
+
+    extern Pantalla pantalla;
+
     void config(void);
 
+    void clearMainScreen(void);
+
     void print_MENU1_BLUETOOTH(void);
-    void print_GRAFIC_ESPECTRAL(void);
-    void print_CANALS_ACTIUS(void);
+    void print_GRAFIC_ESPECTRAL(uint8 canal, uint16 intensitat);
+    void print_CANALS_ACTIUS(/*uint8 canal, uint16 intensitat*/void);
     void print_INHIBIR_MAN(void);
     void print_MENU2_CLOCKS(void);
     void print_MOD_RELLOTGE(void);

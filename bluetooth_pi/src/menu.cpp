@@ -50,7 +50,7 @@ namespace menu{
         /* MENU1_INHIBIR_MANUAL */      screen::print_MENU1_BLUETOOTH,
         /* MENU1_INHIBIR_ESPECTRE */    toggleInhibir,
 
-        /* GRAFIC_ESPECTRAL */          screen::print_GRAFIC_ESPECTRAL,
+        /* GRAFIC_ESPECTRAL */          beginGrafEsp,
         /* CANAL_ACTIU_1 */             screen::print_CANALS_ACTIUS,
         /* CANAL_ACTIU_2 */             screen::print_CANALS_ACTIUS,
         /* CANAL_ACTIU_3 */             screen::print_CANALS_ACTIUS,

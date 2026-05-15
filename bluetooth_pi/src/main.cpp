@@ -37,4 +37,5 @@ void loop() {
   menu::stateMgr();
   clocks::timeMgr();
   bluetooth::jamMgr();
+  bluetooth::readMgr();
 }

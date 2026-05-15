@@ -9,7 +9,19 @@ namespace menu
 {
     State state = MENU1_GRAFIC_ESPECTRAL;
 
-    //Mana iniciar o parar l'inhibició depenent del seu estat actual, i actualitza el seu estat a la barra superior.
+    //Mana parar l'inhibicio de Bluetooth si està activa, i dona instruccions per iniciar el gràfic espectral
+    void beginGrafEsp(void)
+    {
+        if(bluetooth::action == bluetooth::START_JAM || bluetooth::action == bluetooth::JAMMING)
+        {
+            bluetooth::action = bluetooth::STOP_JAM;
+        }
+
+        screen::pantalla = screen::GRAFIC_ESPECTRAL;
+        screen::clearMainScreen();
+    }
+
+    //Mana iniciar o parar l'inhibició depenent del seu estat actual.
     void toggleInhibir(void)
     {
         if(buttons::input == buttons::ESQ_LLARG)
@@ -22,6 +34,7 @@ namespace menu
                     break;
                 }
                 case bluetooth::STOP_JAM:
+                case bluetooth::READING:
                 case bluetooth::OFF:
                 {
                     bluetooth::action = bluetooth::START_JAM;
@@ -32,7 +45,6 @@ namespace menu
         }
         buttons::input = buttons::RES;
         screen::print_MENU1_BLUETOOTH(); //Imprimeix cursor
-        screen::updateTopBarJam();
     }
 
     //Activa i desactiva l'alarma

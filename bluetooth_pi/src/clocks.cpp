@@ -85,10 +85,9 @@ namespace clocks
                 //...i fa saltar l'alarma si està activada i és el moment.
                 //TODO L'alarma només hauria de poder inhibir tot l'espectre.
                 //TODO: això no funciona si es posa l'aparell en mode sleep
-                if(alarm.on == true && time.hh == alarm.hh && time.mm == alarm.mm && (bluetooth::action == bluetooth::STOP_JAM || bluetooth::action == bluetooth::OFF))
+                if(alarm.on == true && time.hh == alarm.hh && time.mm == alarm.mm && bluetooth::action != bluetooth::JAMMING)
                 {
                     bluetooth::action = bluetooth::START_JAM;
-                    screen::updateTopBarJam();
                 }
             }
         }

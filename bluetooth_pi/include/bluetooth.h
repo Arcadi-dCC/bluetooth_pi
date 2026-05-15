@@ -11,13 +11,14 @@ namespace bluetooth{
 
     uint8 init(void);
     void jamMgr(void);
-    uint8 activitatEspectre(uint8 canal);
+    void readMgr(void);
 
     enum Action{
 
         START_JAM = 0,
         JAMMING,
         STOP_JAM,
+        READING,
         OFF
     };
 

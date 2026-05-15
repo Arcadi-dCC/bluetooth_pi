@@ -24,20 +24,6 @@ namespace screen{
 
     TFT_eSPI screen = TFT_eSPI();
 
-    //Totes les pantalles que poden ser imprimides
-    enum Pantalla{
-        MENU1_BLUETOOTH,
-        GRAFIC_ESPECTRAL,
-        CANALS_ACTIUS,
-        INHIBIR_MAN,
-
-        MENU2_CLOCKS,
-        MOD_RELLOTGE,
-        MOD_ALARMA,
-
-        TOTAL_PANTALLES
-    };
-
     Pantalla pantalla = TOTAL_PANTALLES; //indica pantalla mostrada actualment
 
     //Conigura i inicialitza la pantalla TFT
@@ -122,9 +108,18 @@ namespace screen{
         screen.fillTriangle(0,y,0,y+20,17,y+10, TFT_WHITE);
     }
 
+    //Esborra el contingut de tota la pantalla, incloent el cursor, excepte la barra superior
+    void clearMainScreen(void){
+        screen::screen.fillRect(0, linia(0)-SUBMARGE, TFT_WIDTH, TFT_HEIGHT, TFT_BLACK);
+    }
+
     //Imprimeix per pantalla el menu 1 (bluetooth).
     void print_MENU1_BLUETOOTH(void)
     {
+        if(bluetooth::action == bluetooth::READING)
+        {
+            bluetooth::action == bluetooth::STOP_JAM; //Apaga el mòdul bluetooth si s'entra aquí després d'analitzar l'espectre
+        }
         if(pantalla != MENU1_BLUETOOTH)
         {
             pantalla = MENU1_BLUETOOTH;
@@ -137,31 +132,20 @@ namespace screen{
         cursor();
     }
 
-    //Imprimeix er pantalla el gràfic espectral.
-    void print_GRAFIC_ESPECTRAL(void)
+    //Actualitza per pantalla el gràfic espectral amb la informació del canal i la seva intensitat passats per paràmetre
+    void print_GRAFIC_ESPECTRAL(uint8 canal, uint16 intensitat)
     {
-        if(pantalla != GRAFIC_ESPECTRAL)
-        {
-            pantalla = GRAFIC_ESPECTRAL;
-            screen.fillRect(0, linia(0), TFT_WIDTH, TFT_HEIGHT, TFT_BLACK); //neteja el cursor i la zona de les opcions
+        screen.fillRect(canal*3, linia(4)-BT_NUM_READINGS*2, 3, TFT_HEIGHT, TFT_BLACK); //neteja la columna del canal actual
+        uint16 i = 2*intensitat+1; //per fer el gràfic més visible
+        screen.fillRect(canal*3, linia(4)-i, 3, i, TFT_WHITE);
 
-            uint8 val = 1;
-
-            do
-            {
-                for(uint8 i=0; i<BT_TOTAL_CHANNELS; i++)
-                {
-                    if(buttons::input == buttons::DRE_CURT) break;
-                    screen.fillRect(i*3, linia(4)-BT_NUM_READINGS*2, 3, BT_NUM_READINGS*2, TFT_BLACK);
-                    val = 2*bluetooth::activitatEspectre(i)+1; //per fer més visible al gràfic
-                    screen.fillRect(i*3, linia(4)-val, 3, val, TFT_WHITE);
-                }
-            }while(buttons::input != buttons::DRE_CURT);
-        }
+        //Dibuixem un petit rectangle a la posició del següent canal per indicar per on va l'escanneig.
+        i = ((canal + 1) % BT_TOTAL_CHANNELS) * 3;
+        screen.fillRect(i, linia(4)+10, 3, 6, TFT_WHITE);
     }
 
     //Imprimeix per pantalla una llista amb els canals més actius i el seu RSSI.
-    void print_CANALS_ACTIUS(void)
+    void print_CANALS_ACTIUS(/*uint8 canal, uint16 intensitat*/void)
     {
         if(pantalla != CANALS_ACTIUS)
         {
@@ -304,6 +288,7 @@ namespace screen{
                     break;
                 }
                 case bluetooth::STOP_JAM:
+                case bluetooth::READING:
                 case bluetooth::OFF:
                 {
                     screen.setTextColor(TFT_GREEN);

@@ -64,7 +64,7 @@ namespace menu
             }
         }
         buttons::input = buttons::RES;
-        screen::print_MENU1_BLUETOOTH(); //Imprimeix cursor. TODO mirar si cal
+        screen::print_MENU1_BLUETOOTH(); //Imprimeix cursor per si s'ha entrat aqui navegant pels menus.
     }
 
     //Activa i desactiva l'alarma
@@ -75,7 +75,7 @@ namespace menu
             clocks::alarm.on = !clocks::alarm.on; //canvia estat de l'alarma si s'apreta i manté el botó esquerre
         }
         buttons::input = buttons::RES;
-        screen::print_MENU2_CLOCKS(); //imprimeix cursor. TODO mirar si cal
+        screen::print_MENU2_CLOCKS(); //Imprimeix cursor per si s'ha entrat aqui navegant pels menus.
         screen::updateTopBarAlarm();
     }
 

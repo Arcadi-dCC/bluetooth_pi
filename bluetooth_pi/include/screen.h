@@ -32,7 +32,6 @@ namespace screen{
     void print_GRAFIC_ESPECTRAL(uint8 canal, uint8 intensitat);
     void print_CANALS_ACTIUS(uint8 canal, uint8 intensitat);
     void printNoActius(void);
-    void print_INHIBIR_MAN(void);
     void print_MENU2_CLOCKS(void);
     void print_MOD_RELLOTGE(void);
     void print_MOD_ALARMA(void);

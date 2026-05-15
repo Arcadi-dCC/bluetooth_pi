@@ -10,34 +10,25 @@ namespace menu{
     {
         /*                             { ESQ_CURT , ESQ_LLARG , ESQ_SOLTAR , DRE_CURT , DRE_LLARG , TIMER } */
         /* MENU1_GRAFIC_ESPECTRAL   */ { MENU1_CANALS_ACTIUS , GRAFIC_ESPECTRAL , NA , MENU2_CANVI_HORA , APAGAR , NA},
-        /* MENU1_CANALS_ACTIUS      */ { MENU1_INHIBIR_MANUAL , CANAL_ACTIU_1 , NA , MENU2_CANVI_HORA , APAGAR , NA },
-        /* MENU1_INHIBIR_MANUAL     */ { MENU1_INHIBIR_ESPECTRE , INHIBIR_MANUAL , NA , MENU2_CANVI_HORA , APAGAR , NA },
+        /* MENU1_CANALS_ACTIUS      */ { MENU1_INHIBIR_ESPECTRE , CANALS_ACTIUS , NA , MENU2_CANVI_HORA , APAGAR , NA },
         /* MENU1_INHIBIR_ESPECTRE   */ { MENU1_GRAFIC_ESPECTRAL , IN , NA , MENU2_CANVI_HORA , APAGAR , NA },
         
         /* GRAFIC_ESPECTRAL         */ { NA , NA , NA , MENU1_GRAFIC_ESPECTRAL , APAGAR , NA },
-        /* CANAL_ACTIU_1            */ { CANAL_ACTIU_2 , INHIBIR_MANUAL , NA , MENU1_CANALS_ACTIUS , APAGAR , NA },
-        /* CANAL_ACTIU_2            */ { CANAL_ACTIU_3 , INHIBIR_MANUAL , NA , MENU1_CANALS_ACTIUS , APAGAR , NA },
-        /* CANAL_ACTIU_3            */ { CANAL_ACTIU_4 , INHIBIR_MANUAL , NA , MENU1_CANALS_ACTIUS , APAGAR , NA },
-        /* CANAL_ACTIU_4            */ { CANAL_ACTIU_5 , INHIBIR_MANUAL , NA , MENU1_CANALS_ACTIUS , APAGAR , NA },
-        /* CANAL_ACTIU_5            */ { CANAL_ACTIU_1 , INHIBIR_MANUAL , NA , MENU1_CANALS_ACTIUS , APAGAR , NA },
-        /* INHIBIR_MANUAL           */ { IN , IN , IN , MENU1_INHIBIR_MANUAL , APAGAR , NA },
-        /* INHIBIR_ESPECTRE - UNUSED          { NA , NA , NA , MENU1_INHIBIR_ESPECTRE , APAGAR , NA }, */
+        /* CANALS_ACTIUS            */ { NA , NA , NA , MENU1_CANALS_ACTIUS , APAGAR , NA },
 
         /* MENU2_CANVI_HORA         */ { MENU2_CANVI_ALARMA , HORA_ESPERA_HORA , NA , MENU1_GRAFIC_ESPECTRAL , APAGAR , NA },
         /* MENU2_CANVI_ALARMA       */ { MENU2_ACTIVAR_ALARMA , ALARMA_ESPERA_HORA , NA , MENU1_GRAFIC_ESPECTRAL , APAGAR , NA },
         /* MENU2_ACTIVAR_ALARMA     */ { MENU2_CANVI_HORA , IN , NA , MENU1_GRAFIC_ESPECTRAL , APAGAR , NA },
 
         /* HORA_ESPERA_HORA         */ { IN , HORA_INCR_HORA , NA , MENU2_CANVI_HORA , APAGAR , HORA_ESPERA_MINUT },
-        /* HORA_INCR_HORA           */ { NA , NA , HORA_ESPERA_HORA , MENU2_CANVI_HORA , APAGAR , IN },
+        /* HORA_INCR_HORA           */ { NA , NA , HORA_ESPERA_HORA , HORA_ESPERA_HORA , APAGAR , IN },
         /* HORA_ESPERA_MINUT        */ { IN , HORA_INCR_MINUT , NA , MENU2_CANVI_HORA , APAGAR , MENU2_CANVI_HORA },
-        /* HORA_INCR_MINUT          */ { NA , NA , HORA_ESPERA_MINUT , MENU2_CANVI_HORA , APAGAR , IN },
+        /* HORA_INCR_MINUT          */ { NA , NA , HORA_ESPERA_MINUT , HORA_ESPERA_MINUT , APAGAR , IN },
 
         /* ALARMA_ESPERA_HORA       */ { IN , ALARMA_INCR_HORA , NA , MENU2_CANVI_ALARMA , APAGAR , ALARMA_ESPERA_MINUT },
-        /* ALARMA_INCR_HORA         */ { NA , NA , ALARMA_ESPERA_HORA , MENU2_CANVI_ALARMA , APAGAR , IN },
-        /* ALARMA_ESPERA_MINUT      */ { IN , ALARMA_INCR_MINUT , NA , MENU2_CANVI_ALARMA , APAGAR , ALARMA_ESPERA_CANAL },
-        /* ALARMA_INCR_MINUT        */ { NA , NA , ALARMA_ESPERA_MINUT , MENU2_CANVI_ALARMA , APAGAR , IN },
-        /* ALARMA_ESPERA_CANAL      */ { IN , ALARMA_INCR_CANAL , NA , MENU2_CANVI_ALARMA , APAGAR , MENU2_CANVI_ALARMA },
-        /* ALARMA_INCR_CANAL        */ { NA , NA , ALARMA_ESPERA_CANAL , MENU2_CANVI_ALARMA , APAGAR , IN },
+        /* ALARMA_INCR_HORA         */ { NA , NA , ALARMA_ESPERA_HORA , ALARMA_ESPERA_HORA , APAGAR , IN },
+        /* ALARMA_ESPERA_MINUT      */ { IN , ALARMA_INCR_MINUT , NA , MENU2_CANVI_ALARMA , APAGAR , MENU2_CANVI_ALARMA },
+        /* ALARMA_INCR_MINUT        */ { NA , NA , ALARMA_ESPERA_MINUT , ALARMA_ESPERA_MINUT , APAGAR , IN },
         
         /* APAGAR                   */ { NA , NA , NA , NA , NA , NA }
     };
@@ -47,17 +38,10 @@ namespace menu{
     {
         /* MENU1_GRAFIC_ESPECTRAL */    screen::print_MENU1_BLUETOOTH,
         /* MENU1_CANALS_ACTIUS */       screen::print_MENU1_BLUETOOTH,
-        /* MENU1_INHIBIR_MANUAL */      screen::print_MENU1_BLUETOOTH,
         /* MENU1_INHIBIR_ESPECTRE */    toggleInhibir,
 
         /* GRAFIC_ESPECTRAL */          beginAnalisiEsp,
-        /* CANAL_ACTIU_1 */             beginAnalisiEsp,
-        /* CANAL_ACTIU_2 */             beginAnalisiEsp,
-        /* CANAL_ACTIU_3 */             beginAnalisiEsp,
-        /* CANAL_ACTIU_4 */             beginAnalisiEsp,
-        /* CANAL_ACTIU_5 */             beginAnalisiEsp,
-        /* INHIBIR_MANUAL */            screen::print_INHIBIR_MAN,
-        /* INHIBIR_ESPECTRE - UNUSED          toggleInhibir,*/
+        /* CANALS_ACTIUS */             beginAnalisiEsp,
 
         /* MENU2_CANVI_HORA */          screen::print_MENU2_CLOCKS,
         /* MENU2_CANVI_ALARMA */        screen::print_MENU2_CLOCKS,
@@ -72,8 +56,6 @@ namespace menu{
         /* ALARMA_INCR_HORA */          alarmIncMult,
         /* ALARMA_ESPERA_MINUT */       alarmIncSingle,
         /* ALARMA_INCR_MINUT */         alarmIncMult,
-        /* ALARMA_ESPERA_CANAL */       alarmIncSingle,
-        /* ALARMA_INCR_CANAL */         alarmIncMult,
 
         /* APAGAR */                    fun
     };

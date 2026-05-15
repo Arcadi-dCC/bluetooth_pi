@@ -33,7 +33,6 @@ namespace clocks
         alarm.hh=0;
         alarm.mm=0;
         alarm.ss=0;
-        alarm.ch=0;
         alarm.on=false;
 
         adv_sec = false;
@@ -83,7 +82,6 @@ namespace clocks
                 screen::updateTime(); //...actualitza el temps per pantalla.
                 
                 //...i fa saltar l'alarma si està activada i és el moment.
-                //TODO L'alarma només hauria de poder inhibir tot l'espectre.
                 //TODO: això no funciona si es posa l'aparell en mode sleep
                 if(alarm.on == true && time.hh == alarm.hh && time.mm == alarm.mm && bluetooth::action != bluetooth::JAMMING)
                 {

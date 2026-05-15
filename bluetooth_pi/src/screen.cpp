@@ -133,10 +133,10 @@ namespace screen{
     }
 
     //Actualitza per pantalla el gràfic espectral amb la informació del canal i la seva intensitat passats per paràmetre
-    void print_GRAFIC_ESPECTRAL(uint8 canal, uint16 intensitat)
+    void print_GRAFIC_ESPECTRAL(uint8 canal, uint8 intensitat)
     {
         screen.fillRect(canal*3, linia(4)-BT_NUM_READINGS*2, 3, TFT_HEIGHT, TFT_BLACK); //neteja la columna del canal actual
-        uint16 i = 2*intensitat+1; //per fer el gràfic més visible
+        uint8 i = 2*intensitat+1; //per fer el gràfic més visible
         screen.fillRect(canal*3, linia(4)-i, 3, i, TFT_WHITE);
 
         //Dibuixem un petit rectangle a la posició del següent canal per indicar per on va l'escanneig.
@@ -144,29 +144,67 @@ namespace screen{
         screen.fillRect(i, linia(4)+10, 3, 6, TFT_WHITE);
     }
 
-    //Imprimeix per pantalla una llista amb els canals més actius i el seu RSSI.
-    void print_CANALS_ACTIUS(/*uint8 canal, uint16 intensitat*/void)
+
+    //Arrays per imprimir els canals més actius
+    uint8 canals_actius[5] = {0,0,0,0,0};
+    uint8 intensitats[5] = {0,0,0,0,0}; //intensitats o forces dels senyals, ordenades de més gran [0] a més petita [4]
+
+    //Actualitza per pantalla una llista amb els canals més actius i la seva intensitat.
+    void print_CANALS_ACTIUS(uint8 ch, uint8 inte)
     {
-        if(pantalla != CANALS_ACTIUS)
+
+        uint8 i = 0;
+        bool multiflag = false; //flag per indicar si el canal ja estava a la llista, i també si cal actualitzar la pantalla.
+
+        //1. Comprovar si el canal actual està a la llista. En cas afirmatiu, actualitzar la seva intensitat
+        for (i=0; i<5; i++)
         {
-            pantalla = CANALS_ACTIUS;
-            screen.fillRect(MARGE, linia(0), TFT_WIDTH, TFT_HEIGHT, TFT_BLACK); //neteja la zona de les opcions
-
-            //Troba els canals actius i el seu RSSI
-            uint8 canal[5];
-            sint16 rssi[5];
-
-            //trucar funció de bluetooth per plenar arrays
-
-            for(uint8 i=0;i<5;i++)
+            if(canals_actius[i] == ch)
             {
-                screen.setCursor(MARGE, linia(i));
-                screen.printf("Ch.%d", canal[i]);
-                screen.setCursor(TFT_WIDTH/2, linia(i));
-                screen.printf("RSSI: %d", rssi[i]);
+                multiflag = true;
+                intensitats[i] = inte;
+                break; //i es queda amb la posició del canal actualitzat
             }
         }
-        cursor();
+
+        //En cas negatiu, si hi ha activitat i és superior a la més petita present, substituir canal i activitat a la seva posició
+        if(multiflag == false && inte > 0)
+        {
+            uint8 inte_min = inte;
+            i = 5;
+            for(uint8 t=0; t<5; t++)
+            {
+                if(intensitats[t] < inte_min)
+                {
+                    inte_min = intensitats[t];
+                    i = t; //emprem i com a marcador de la posicio amb intensitat més baixa
+                }
+            }
+
+            if(i < 5) //hi ha al menys una intensitat menor
+            {
+                multiflag = true;
+                canals_actius[i] = ch;
+                intensitats[i] = inte;
+            }
+        }
+
+        //2. Si ha hagut canvis a canals_actius[] o intensitats[], imprimir el canvi per pantalla
+        if(multiflag == true)
+        {
+            screen::screen.fillRect(MARGE, linia(i), TFT_WIDTH, LIN_SEP, TFT_BLACK);
+            screen.setCursor(MARGE, linia(i));
+            screen.printf("Ch.%d", canals_actius[i]);
+            screen.setCursor(107, linia(i));
+            screen.printf("Forca %d%%", intensitats[i]);
+        }
+    }
+
+    //Petita impressió per pantalla per indicar que no s'ha detectat cap senyal, abans de que se'n comencin a detectar durant CANALS_ACTIUS.
+
+    void printNoActius(void)
+    {
+        screen.drawString("Cercant activitat...", MARGE, linia(0));
     }
 
     //Imprimeix per pantalla el selector manual de canals a inhibir.

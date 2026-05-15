@@ -114,11 +114,11 @@ namespace bluetooth{
                             screen::print_GRAFIC_ESPECTRAL(ch, detections);
                             break;
                         }
-                        /*case screen::CANALS_ACTIUS:
+                        case screen::CANALS_ACTIUS:
                         {
                             screen::print_CANALS_ACTIUS(ch, detections);
                             break;
-                        }*/
+                        }
                         default:{/*Do nothing*/break;}
                     }
                     break;

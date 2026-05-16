@@ -58,7 +58,7 @@ namespace menu{
         /* ALARMA_ESPERA_MINUT */       alarmIncSingle,
         /* ALARMA_INCR_MINUT */         alarmIncMult,
 
-        /* APAGAR */                    sleeep::powerDown
+        /* APAGAR */                    apagar
     };
 
     //Initializes menu FSM

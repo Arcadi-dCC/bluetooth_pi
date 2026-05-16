@@ -7,6 +7,8 @@
 #include <SPI.h>
 #include <TFT_eSPI.h>
 
+#define TFT_LED 5 //pin connectat a l'entrada "LED" que controla la retroil·luminació
+
 #define FONT 4
 #define FONT_SIZE 1
 
@@ -40,6 +42,10 @@ namespace screen{
         updateTime();
         updateTopBarAlarm();
         updateTopBarJam();
+
+        //S'activa la retroil·luminació al final per no mostrar cap pantalla blanca
+        pinMode(TFT_LED, OUTPUT);
+        digitalWrite(TFT_LED, HIGH);
     }
 
     //Recull per paràmetre la línia en la que es vol escriure (0, 1, 2, 3, 4)
@@ -319,6 +325,13 @@ namespace screen{
         screen.setTextColor(TFT_WHITE); //Retorna al color original
         screen.setTextSize(FONT_SIZE); //Torna al tamany i lletra original.
         screen.setTextFont(FONT);
+    }
+
+    //Posa la pantalla en mode sleep i desactiva la retroil·luminació
+    void sleep(void)
+    {
+        digitalWrite(TFT_LED, LOW); //desactiva retroil·luminació
+        screen.writecommand(0x10); //instrucció per posar pantalla en mode sleep.
     }
 
 }; //namespace screen

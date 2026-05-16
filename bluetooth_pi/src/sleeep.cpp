@@ -3,9 +3,7 @@
 #include <driver/rtc_io.h>
 
 #include <platformTypes.h>
-#include <clocks.h>
 #include <buttons.h>
-#include <bluetooth.h>
 
 #define TEMPS_PRE_ALARMA 2 //s 
 
@@ -15,50 +13,25 @@ namespace sleeep
     RTC_DATA_ATTR bool from_sleep = false; //flag per indicar que el microcontrolador ha arrencat després d'estar en mode sleep, i no després d'un reset
     RTC_DATA_ATTR struct timeval instant; //per guardar l'instant de temps en que s'ha entrat en mode sleep.
 
-    //Rutina per preparar les condicions de wake up (botó esquerre i alarma), i posar el microcontrolador i perifèrics en mode sleep.
-    void powerDown(void)
+    //Rutina per preparar les condicions de wake up (botó esquerre, alarma), i registrar l'instant de sleep per actualitzar el rellotge en wakeup.
+    //Paràmtres: timer: indica si cal despertar passat un temps. time: quan temps fins despertar-se, en segons
+    void powerDown(bool timer, uint32 time)
     {
         //Permetre wake up en apretar el botó esquerre
         rtc_gpio_hold_en((gpio_num_t)L_BTN_PIN);
         esp_sleep_enable_ext1_wakeup(1ULL << L_BTN_PIN, ESP_EXT1_WAKEUP_ANY_LOW); //Argument 1: màscara amb el bit 21 a 1.
 
-        
-        //Si l'alarma està activada, calcular temps entre ara i l'alarma i demanar un wakeup passat aquest temps
-        if(clocks::alarm.on == true)
+        //Si cal permetre el wakeup per temps
+        if(timer == true)
         {
-            //Obtenim instant de temps actual i de l'alarma, en segons
-            uint64 ara = (uint64)clocks::time.hh*3600 + (uint64)clocks::time.mm*60 + (uint64)clocks::time.ss;
-            uint64 alarma = (uint64)clocks::alarm.hh*3600 + (uint64)clocks::alarm.mm*60;
-
-            //Calculem temps entre ara i la propera alarma, en segons, i li restem 3 segons. Així, timeMgr() activarà l'alarma sol.
-            if(ara <= alarma)
-            {
-                //Si l'alarma està programada més endavant el mateix dia
-                alarma = alarma - ara;
-            }
-            else
-            {
-                //Si l'alarma està programada per l'endemà. 86400 = 24h * 3600s en un hora
-                alarma = 86400 - ara + alarma; // equivalent a → 86400 - (ara-alarma)
-            }
-
-            //Restem TEMPS_PRE_ALARMA segons per donar temps a que timeMgr() activi l'alarma després del wake up, i convertim a microsegons
-            alarma = (alarma - TEMPS_PRE_ALARMA) * 1e6;
-
-            esp_sleep_enable_timer_wakeup(alarma);
+            //Restem TEMPS_PRE_ALARMA segons per donar temps a que timeMgr() activi l'alarma després del wake up, convertim a microsegons...
+            //...i habilitem wakeup per timer
+            esp_sleep_enable_timer_wakeup(((uint64)time - TEMPS_PRE_ALARMA) * 1e6);
         }
-
-        //Apagar perifèrics
-        bluetooth::turnOff();
-
-        //Guardar l'instant de temps en que s'entra al mode sleep, en segons.
-        gettimeofday(&instant, NULL);
-
-        //Aixecar flag per indicar que s'entra en mode sleep
-        from_sleep = true;
-
-        //Posar a dormir
-        esp_deep_sleep_start();
+        
+        gettimeofday(&instant, NULL); //Guardar l'instant de temps en que s'entra al mode sleep, en segons.
+        from_sleep = true; //Aixecar flag per indicar que s'entra en mode sleep
+        esp_deep_sleep_start(); //Posar a dormir
     }
 
     //Funció a cridar després d'un wake up (!= reset).

@@ -39,6 +39,7 @@ namespace menu{
     void toggleAlarma(void);
     void alarmIncSingle(void);
     void alarmIncMult(void);
+    void apagar(void);
 
 } //namespace menu
 

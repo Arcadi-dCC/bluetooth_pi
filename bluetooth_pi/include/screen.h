@@ -39,6 +39,7 @@ namespace screen{
     void updateTime(void);
     void updateTopBarAlarm(void);
     void updateTopBarJam(void);
+    void sleep(void);
 
 }; //namespace screen
 

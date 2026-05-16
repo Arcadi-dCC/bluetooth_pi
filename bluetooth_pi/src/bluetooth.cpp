@@ -133,9 +133,13 @@ namespace bluetooth{
     }
 
     //Crida a radio.PowerDown(). Permet apagar el mòdul directament per quan s'entra en mode sleep.
+    //És preferible canviar el valor de "action" a action=STOP_JAM, i que jamMgr() s'encarregui dins del bucle principal.
+    //Comprova que el mètode anterior no és compatible abans d'emprar turnOff().
     void turnOff(void)
     {
         radio.powerDown();
+        action = OFF;
+        screen::updateTopBarJam();
     }
 
 }; //namespace bluetooth

@@ -1,5 +1,5 @@
-#ifndef MENUFUN_H_
-#define MENUFUN_H_
+#ifndef MENUFUN_H
+#define MENUFUN_H
 
 namespace menu{
 
@@ -39,9 +39,7 @@ namespace menu{
     void toggleAlarma(void);
     void alarmIncSingle(void);
     void alarmIncMult(void);
-    void fun(void);
-
 
 } //namespace menu
 
-#endif // MENUFUN_H_
+#endif // MENUFUN_H

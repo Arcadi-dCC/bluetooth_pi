@@ -4,6 +4,7 @@
 #include <clocks.h>
 #include <buttons.h>
 #include <bluetooth.h>
+#include <sleeep.h>
 
 void setup() {
   Serial.begin(115200); // Initialize serial communication
@@ -17,6 +18,8 @@ void setup() {
     Serial.println("Failed to initialize clock timer!");
       for(;;);
   }
+
+  sleeep::onWakeUp();
   
   screen::config();
 

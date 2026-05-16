@@ -3,6 +3,7 @@
 #include <Arduino.h>
 #include <screen.h>
 #include <bluetooth.h>
+#include <sleeep.h>
 
 namespace clocks
 {
@@ -16,8 +17,8 @@ namespace clocks
         adv_sec = true; //aixeca flag
     }
 
-    Alarm time;
-    Alarm alarm;
+    RTC_DATA_ATTR Alarm time;
+    RTC_DATA_ATTR Alarm alarm;
 
     hw_timer_t* sec_timer = NULL; //punter a timer1
 
@@ -25,15 +26,18 @@ namespace clocks
     //Return: 0-OK 1-error
     uint8 init(void)
     {
-        //Inicialitza rellotge i alarma a mitjanit
-        time.hh=0;
-        time.mm=0;
-        time.ss=0;
+        if(sleeep::from_sleep == false)
+        {
+            //Inicialitza rellotge i alarma a mitjanit només si es tracta d'un reset (no es fa al sortr del mode sleep)
+            time.hh=0;
+            time.mm=0;
+            time.ss=0;
 
-        alarm.hh=0;
-        alarm.mm=0;
-        alarm.ss=0;
-        alarm.on=false;
+            alarm.hh=0;
+            alarm.mm=0;
+            alarm.ss=0;
+            alarm.on=false;
+        }
 
         adv_sec = false;
         new_min = false;

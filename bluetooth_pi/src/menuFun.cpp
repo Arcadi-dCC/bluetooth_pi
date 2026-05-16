@@ -1,5 +1,4 @@
 #include <menuFun.h>
-#include <Arduino.h> //TEMP
 #include <clocks.h>
 #include <buttons.h>
 #include <screen.h>
@@ -162,12 +161,6 @@ namespace menu
             }
             default:{/*Do nothing*/break;}
         }
-    }
-
-    //Funció inofensiva genèrica
-    void fun(void){
-        Serial.println(state);
-        buttons::input = buttons::RES;
     }
 
 } // namespace menu

@@ -132,4 +132,10 @@ namespace bluetooth{
         }
     }
 
+    //Crida a radio.PowerDown(). Permet apagar el mòdul directament per quan s'entra en mode sleep.
+    void turnOff(void)
+    {
+        radio.powerDown();
+    }
+
 }; //namespace bluetooth

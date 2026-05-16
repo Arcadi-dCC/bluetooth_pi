@@ -1,5 +1,5 @@
-#ifndef SCREEN_H_
-#define SCREEN_H_
+#ifndef SCREEN_H
+#define SCREEN_H
 
 #include <platformTypes.h>
 
@@ -42,4 +42,4 @@ namespace screen{
 
 }; //namespace screen
 
-#endif //SCREEN_H_
+#endif //SCREEN_H

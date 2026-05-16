@@ -189,7 +189,7 @@ namespace screen{
         }
     }
 
-    //Petita impressió per pantalla per indicar que no s'ha detectat cap senyal, abans de que se'n comencin a detectar durant CANALS_ACTIUS.
+    //Petita impressió per pantalla per indicar que s'està cercant activitat, abans de que es comencin a detectar canals durant CANALS_ACTIUS.
     void printNoActius(void)
     {
         screen.drawString("Cercant activitat...", MARGE, linia(0));

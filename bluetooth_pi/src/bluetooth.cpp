@@ -13,6 +13,10 @@
 
 #define BT_INITIAL_CH 45 //0 does not work
 
+//Segons datasheet, el temps mínim per poder fer lectures és 1,63ms en sortir de powerDown(), i després 150us cada canvi entre TX i RX.
+//Amb 2ms funciona OK, pero es posa més alt perquè gràfic i llista s'actualitzen massa ràpid.
+#define BT_TIME_BTW_READINGS 35 //ms
+
 namespace bluetooth{
 
     SPIClass hspi;
@@ -95,7 +99,8 @@ namespace bluetooth{
             
                     radio.setChannel(ch);
                     radio.startListening();
-                    delay(130); //Deixa al mòdul fer els canvis pertinents
+
+                    delay(BT_TIME_BTW_READINGS); //Deixa al mòdul fer els canvis pertinents
                         
                     uint8 detections = 0;
                         

@@ -22,13 +22,47 @@ namespace clocks
 
     hw_timer_t* sec_timer = NULL; //punter a timer1
 
-    //Inicialitza el timer pel rellotge, i inicia rellotge i alarma a mitjanit
+    //Actualitza el temps del rellotge a partir de la diferència en segons entre l'instant de l'última entrada a sleep i ara.
+    void updateTimeOnWakeUp(void)
+    {
+        //Llegim instant actual en segons
+        struct timeval now;
+        gettimeofday(&now, NULL);
+
+        //Obtenim la diferència amb l'instant d'entrar en mode sleep
+        sint32 dif_ss = now.tv_sec - sleeep::instant.tv_sec;
+
+        Alarm dif;
+
+        //Es converteix la diferencia de segons a hh:mm:ss.
+        dif.hh = dif_ss / 3600;
+        dif.mm = (dif_ss / 60) % 60;
+        dif.ss = dif_ss % 60;
+
+        //S'actualitza el temps de clocks
+        time.ss += dif.ss;
+        if(time.ss > 59)
+        {
+            time.mm++;
+            time.ss %= 60;
+        }
+        time.mm += dif.mm;
+        if(time.mm > 59)
+        {
+            time.hh++;
+            time.mm %= 60;
+        }
+        time.hh += dif.hh;
+        time.hh %= 24;
+    }
+
+    //Inicialitza el timer pel rellotge, i o bé inicia rellotge i alarma a mitjanit, o actualitza el rellotge si ha hagut un wake up.
     //Return: 0-OK 1-error
     uint8 init(void)
     {
-        if(sleeep::from_sleep == false)
+        if(sleeep::from_sleep == false) //Primera arrencada, o ha hagut un reset
         {
-            //Inicialitza rellotge i alarma a mitjanit només si es tracta d'un reset (no es fa al sortr del mode sleep)
+            //Inicialitza rellotge i alarma a mitjanit
             time.hh=0;
             time.mm=0;
             time.ss=0;
@@ -37,6 +71,10 @@ namespace clocks
             alarm.mm=0;
             alarm.ss=0;
             alarm.on=false;
+        }
+        else //S'acaba de sortir del mode sleep
+        {
+            updateTimeOnWakeUp();
         }
 
         adv_sec = false;

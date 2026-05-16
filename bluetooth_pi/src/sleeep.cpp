@@ -7,12 +7,13 @@
 #include <buttons.h>
 #include <bluetooth.h>
 
-#define TEMPS_PRE_ALARMA 3 //s 
+#define TEMPS_PRE_ALARMA 2 //s 
 
 namespace sleeep
 {
 
     RTC_DATA_ATTR bool from_sleep = false; //flag per indicar que el microcontrolador ha arrencat després d'estar en mode sleep, i no després d'un reset
+    RTC_DATA_ATTR struct timeval instant; //per guardar l'instant de temps en que s'ha entrat en mode sleep.
 
     //Rutina per preparar les condicions de wake up (botó esquerre i alarma), i posar el microcontrolador i perifèrics en mode sleep.
     void powerDown(void)
@@ -49,6 +50,9 @@ namespace sleeep
 
         //Apagar perifèrics
         bluetooth::turnOff();
+
+        //Guardar l'instant de temps en que s'entra al mode sleep, en segons.
+        gettimeofday(&instant, NULL);
 
         //Aixecar flag per indicar que s'entra en mode sleep
         from_sleep = true;

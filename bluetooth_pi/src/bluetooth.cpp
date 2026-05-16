@@ -99,7 +99,6 @@ namespace bluetooth{
             
                     radio.setChannel(ch);
                     radio.startListening();
-
                     delay(BT_TIME_BTW_READINGS); //Deixa al mòdul fer els canvis pertinents
                         
                     uint8 detections = 0;

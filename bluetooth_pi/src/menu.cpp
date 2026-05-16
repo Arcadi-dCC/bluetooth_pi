@@ -74,17 +74,18 @@ namespace menu{
             {
                 state = fsm_paths[state][buttons::input];
                 stateAct[state]();
+                buttons::input = buttons::RES;
             }
             else if(fsm_paths[state][buttons::input] == IN)
             {
-                stateAct[state]();        
+                stateAct[state]();
+                //El control i reset de l'input es fa internament.        
             }
             else //fsm_paths[state][input] == NA
             {
-                /*Do nothing. L'input no està associat a cap acció en l'estat actual.*/
+                buttons::input = buttons::RES;
+                //Res més. L'input no està associat a cap acció en l'estat actual.
             }
-            buttons::input = buttons::RES; //assegura que input sigui igual a RES en acabar
         }
     }
-
 };

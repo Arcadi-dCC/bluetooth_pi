@@ -26,11 +26,7 @@ namespace menu
                 screen::pantalla = screen::GRAFIC_ESPECTRAL;
                 break;
             }
-            case CANAL_ACTIU_1:
-            case CANAL_ACTIU_2:
-            case CANAL_ACTIU_3:
-            case CANAL_ACTIU_4:
-            case CANAL_ACTIU_5:
+            case CANALS_ACTIUS:
             {
                 screen::pantalla = screen::CANALS_ACTIUS;
                 for(uint8 i=0; i<5; i++)
@@ -68,7 +64,7 @@ namespace menu
             }
         }
         buttons::input = buttons::RES;
-        screen::print_MENU1_BLUETOOTH(); //Imprimeix cursor
+        screen::print_MENU1_BLUETOOTH(); //Imprimeix cursor per si s'ha entrat aqui navegant pels menus.
     }
 
     //Activa i desactiva l'alarma
@@ -79,7 +75,7 @@ namespace menu
             clocks::alarm.on = !clocks::alarm.on; //canvia estat de l'alarma si s'apreta i manté el botó esquerre
         }
         buttons::input = buttons::RES;
-        screen::print_MENU2_CLOCKS(); //imprimeix cursor
+        screen::print_MENU2_CLOCKS(); //Imprimeix cursor per si s'ha entrat aqui navegant pels menus.
         screen::updateTopBarAlarm();
     }
 
@@ -106,10 +102,7 @@ namespace menu
                 case ALARMA_ESPERA_MINUT:{
                     clocks::alarm.mm = (clocks::alarm.mm + 1 ) % 60; break;
                 }
-                case ALARMA_ESPERA_CANAL:{
-                    clocks::alarm.ch = (clocks::alarm.ch + 1 ) % 81; break;
-                }
-                default:{/*Do nothing*/}
+                default:{/*Do nothing*/break;}
             }
         }
         buttons::input = buttons::RES;
@@ -123,11 +116,10 @@ namespace menu
             }
             case ALARMA_ESPERA_HORA:
             case ALARMA_ESPERA_MINUT:
-            case ALARMA_ESPERA_CANAL:
             {
                 screen::print_MOD_ALARMA(); break;
             }
-            default:{/*Do nothing*/}
+            default:{/*Do nothing*/break;}
         }
     }
 
@@ -153,10 +145,7 @@ namespace menu
             case ALARMA_INCR_MINUT:{
                 clocks::alarm.mm = (clocks::alarm.mm + 1 ) % 60; break;
             }
-            case ALARMA_INCR_CANAL:{
-                clocks::alarm.ch = (clocks::alarm.ch + 1 ) % 81; break;
-            }
-            default:{/*Do nothing*/}
+            default:{/*Do nothing*/break;}
         }
 
         switch(state)
@@ -168,11 +157,10 @@ namespace menu
             }
             case ALARMA_INCR_HORA:
             case ALARMA_INCR_MINUT:
-            case ALARMA_INCR_CANAL:
             {
                 screen::print_MOD_ALARMA(); break;
             }
-            default:{/*Do nothing*/}
+            default:{/*Do nothing*/break;}
         }
     }
 

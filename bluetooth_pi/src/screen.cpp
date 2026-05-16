@@ -57,7 +57,6 @@ namespace screen{
         {
             //Casos on el cursor va a la línia 0
             case (menu::MENU1_GRAFIC_ESPECTRAL):
-            case (menu::CANAL_ACTIU_1):
             case (menu::HORA_ESPERA_HORA):
             case (menu::HORA_INCR_HORA):
             case (menu::ALARMA_ESPERA_HORA):
@@ -68,7 +67,6 @@ namespace screen{
 
             //Casos on el cursor va a la línia 1
             case (menu::MENU1_CANALS_ACTIUS):
-            case (menu::CANAL_ACTIU_2):
             case (menu::MENU2_CANVI_HORA):
             case (menu::HORA_ESPERA_MINUT):
             case (menu::HORA_INCR_MINUT):
@@ -79,31 +77,23 @@ namespace screen{
             }
 
             //Casos on el cursor va a la línia 2
-            case (menu::MENU1_INHIBIR_MANUAL):
-            case (menu::CANAL_ACTIU_3):
-            case (menu::ALARMA_ESPERA_CANAL):
-            case (menu::ALARMA_INCR_CANAL):
+            case (menu::MENU1_INHIBIR_ESPECTRE):
             {
                 y = linia(2); break;
             }
 
             //Casos on el cursor va a la línia 3
-            case (menu::MENU1_INHIBIR_ESPECTRE):
-            case (menu::CANAL_ACTIU_4):
             case (menu::MENU2_CANVI_ALARMA):
             {
                 y = linia(3); break;
             }
 
             //Casos on el cursor va a la línia 4
-            case (menu::CANAL_ACTIU_5):
             case (menu::MENU2_ACTIVAR_ALARMA):
             {
                 y = linia(4); break;
             }
-            default:{
-                /*Do nothing*/
-            }
+            default:{/*Do nothing*/break;}
         }
         screen.fillTriangle(0,y,0,y+20,17,y+10, TFT_WHITE);
     }
@@ -126,8 +116,7 @@ namespace screen{
             screen.fillRect(MARGE, linia(0)-SUBMARGE, TFT_WIDTH, TFT_HEIGHT, TFT_BLACK); //neteja la zona de les opcions
             screen.drawString("Grafic espectral", MARGE, linia(0));
             screen.drawString("Canals actius", MARGE, linia(1));
-            screen.drawString("Inhibir canal (man)", MARGE, linia(2));
-            screen.drawString("Inhibir espectre", MARGE, linia(3));
+            screen.drawString("Inhibir espectre", MARGE, linia(2));
         }
         cursor();
     }
@@ -156,7 +145,7 @@ namespace screen{
         uint8 i = 0;
         bool multiflag = false; //flag per indicar si el canal ja estava a la llista, i també si cal actualitzar la pantalla.
 
-        //1. Comprovar si el canal actual està a la llista. En cas afirmatiu, actualitzar la seva intensitat
+        //Comprovar si el canal actual està a la llista. En cas afirmatiu, actualitzar la seva intensitat
         for (i=0; i<5; i++)
         {
             if(canals_actius[i] == ch)
@@ -189,7 +178,7 @@ namespace screen{
             }
         }
 
-        //2. Si ha hagut canvis a canals_actius[] o intensitats[], imprimir el canvi per pantalla
+        //Si ha hagut canvis a canals_actius[] o intensitats[], imprimir el canvi per pantalla
         if(multiflag == true)
         {
             screen::screen.fillRect(MARGE, linia(i), TFT_WIDTH, LIN_SEP, TFT_BLACK);
@@ -200,21 +189,10 @@ namespace screen{
         }
     }
 
-    //Petita impressió per pantalla per indicar que no s'ha detectat cap senyal, abans de que se'n comencin a detectar durant CANALS_ACTIUS.
-
+    //Petita impressió per pantalla per indicar que s'està cercant activitat, abans de que es comencin a detectar canals durant CANALS_ACTIUS.
     void printNoActius(void)
     {
         screen.drawString("Cercant activitat...", MARGE, linia(0));
-    }
-
-    //Imprimeix per pantalla el selector manual de canals a inhibir.
-    void print_INHIBIR_MAN(void)
-    {
-        if(pantalla != INHIBIR_MAN)
-        {
-            pantalla = INHIBIR_MAN;
-            screen.fillRect(0, linia(0), TFT_WIDTH, TFT_HEIGHT, TFT_BLACK); //neteja el cursor i la zona de les opcions
-        }
     }
 
     //Imprimeix per pantalla el menu 2 (rellotges).
@@ -236,7 +214,6 @@ namespace screen{
 
             screen.drawString("Modificar", MARGE+2*SUBMARGE, linia(3));
             screen.drawString("Des/activar", MARGE+2*SUBMARGE, linia(4));
-
         }
         cursor();
     }
@@ -283,8 +260,6 @@ namespace screen{
         screen.printf("Hora:  %d", clocks::alarm.hh);
         screen.setCursor(MARGE, linia(1));
         screen.printf("Minut: %02d", clocks::alarm.mm);
-        screen.setCursor(MARGE, linia(2));
-        screen.printf("Canal:  %d", clocks::alarm.ch);
         cursor();
     }
 

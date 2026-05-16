@@ -10,7 +10,6 @@ namespace clocks{
     //estructura per rellotge i alarma
     typedef struct Alarm{
     uint8 hh, mm, ss;
-    uint8 ch; //channel per alarma
     bool on; //on-off per alarma
     }Alarm;
 

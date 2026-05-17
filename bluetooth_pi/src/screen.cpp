@@ -7,6 +7,8 @@
 #include <SPI.h>
 #include <TFT_eSPI.h>
 
+#define TFT_LED 5 //pin connectat a l'entrada "LED" que controla la retroil·luminació
+
 #define FONT 4
 #define FONT_SIZE 1
 
@@ -40,6 +42,10 @@ namespace screen{
         updateTime();
         updateTopBarAlarm();
         updateTopBarJam();
+
+        //S'activa la retroil·luminació al final per no mostrar cap pantalla blanca
+        pinMode(TFT_LED, OUTPUT);
+        digitalWrite(TFT_LED, HIGH);
     }
 
     //Recull per paràmetre la línia en la que es vol escriure (0, 1, 2, 3, 4)
@@ -239,27 +245,51 @@ namespace screen{
         }
     }
 
-    //Imprimeix per pantalla el menu per canviar l'hora.
-    void print_MOD_RELLOTGE(void)
+    //Imprimeix per pantalla el menu per canviar l'hora o l'alarma.
+    void print_MOD_CLOCKS(void)
     {
-        pantalla = MOD_RELLOTGE;
-        screen.fillRect(MARGE, linia(0)-SUBMARGE, TFT_WIDTH, TFT_HEIGHT, TFT_BLACK); //neteja la zona de les opcions
-        screen.setCursor(MARGE, linia(0));
-        screen.printf("Hora:  %d", clocks::time.hh);
-        screen.setCursor(MARGE, linia(1));
-        screen.printf("Minut: %02d", clocks::time.mm);
-        cursor();
-    }
+        clocks::Alarm* printer = NULL;
+        
+        //Decideix si mostrar els valors del rellotge o l'alarma.
+        if(menu::state < menu::ALARMA_ESPERA_HORA) printer = &(clocks::time);
+        else printer = &(clocks::alarm);
 
-    //Imprimeix per pantalla el menu per canviar l'alarma.
-    void print_MOD_ALARMA(void)
-    {
-        pantalla = MOD_ALARMA;
-        screen.fillRect(MARGE, linia(0)-SUBMARGE, TFT_WIDTH, TFT_HEIGHT, TFT_BLACK); //neteja la zona de les opcions
-        screen.setCursor(MARGE, linia(0));
-        screen.printf("Hora:  %d", clocks::alarm.hh);
-        screen.setCursor(MARGE, linia(1));
-        screen.printf("Minut: %02d", clocks::alarm.mm);
+        if(pantalla != MOD_CLOCKS)
+        {
+            //Només s'executa això quan s'ha entrat a aquesta pantalla per primer cop
+            pantalla = MOD_CLOCKS;
+            screen.fillRect(MARGE, linia(0)-SUBMARGE, TFT_WIDTH, TFT_HEIGHT, TFT_BLACK); //neteja la zona de les opcions
+
+            screen.setCursor(MARGE, linia(0));
+            screen.printf("Hora: %d", printer->hh);
+            screen.setCursor(MARGE, linia(1));
+            screen.printf("Minut: %02d", printer->mm);
+        }
+        
+        //Actualitza per pantalla el valor modificat
+        switch(menu::state)
+        {
+            case menu::HORA_ESPERA_HORA:
+            case menu::HORA_INCR_HORA:
+            case menu::ALARMA_ESPERA_HORA:
+            case menu::ALARMA_INCR_HORA:
+            {
+                screen.fillRect(MARGE+67, linia(0), TFT_WIDTH, LIN_SEP, TFT_BLACK); //neteja la zona pel número de l'hora
+                screen.drawNumber(printer->hh, MARGE+67, linia(0));
+                break;
+            }
+            case menu::HORA_ESPERA_MINUT:
+            case menu::HORA_INCR_MINUT:
+            case menu::ALARMA_ESPERA_MINUT:
+            case menu::ALARMA_INCR_MINUT:
+            {
+                screen.fillRect(MARGE+75, linia(1), TFT_WIDTH, LIN_SEP, TFT_BLACK); //neteja la zona pel número del minut
+                screen.setCursor(MARGE + 75, linia(1));
+                screen.printf("%02d", printer->mm);
+                break;
+            }
+            default:{/*Do nothing*/break;}
+        }
         cursor();
     }
 
@@ -319,6 +349,13 @@ namespace screen{
         screen.setTextColor(TFT_WHITE); //Retorna al color original
         screen.setTextSize(FONT_SIZE); //Torna al tamany i lletra original.
         screen.setTextFont(FONT);
+    }
+
+    //Posa la pantalla en mode sleep i desactiva la retroil·luminació
+    void sleep(void)
+    {
+        digitalWrite(TFT_LED, LOW); //desactiva retroil·luminació
+        screen.writecommand(0x10); //instrucció per posar pantalla en mode sleep.
     }
 
 }; //namespace screen

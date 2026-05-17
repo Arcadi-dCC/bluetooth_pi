@@ -1,9 +1,6 @@
 #include <buttons.h>
 #include <Arduino.h>
 
-#define L_BTN_PIN 21
-#define R_BTN_PIN 20
-
 #define DEBOUNCE_TIME 50e3 //us
 #define SORT_TIME 2e6 //us
 
@@ -26,7 +23,7 @@ namespace buttons{
 
     volatile Input input = RES;
 
-        enum Sort{
+    enum Sort{
         FREE,
         L_DEBOUNCE,
         R_DEBOUNCE,

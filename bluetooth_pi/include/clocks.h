@@ -1,5 +1,5 @@
-#ifndef clock_H
-#define clock_H
+#ifndef CLOCKS_H
+#define CLOCKS_H
 
 #include <platformTypes.h>
 
@@ -17,4 +17,4 @@ namespace clocks{
     extern Alarm alarm;
 };
 
-#endif //clock_H
+#endif //CLOCKS_H

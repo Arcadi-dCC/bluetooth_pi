@@ -1,9 +1,9 @@
 #include <menuFun.h>
-#include <Arduino.h> //TEMP
 #include <clocks.h>
 #include <buttons.h>
 #include <screen.h>
 #include <bluetooth.h>
+#include <sleeep.h>
 
 namespace menu
 {
@@ -106,21 +106,7 @@ namespace menu
             }
         }
         buttons::input = buttons::RES;
-
-        switch(state)
-        {
-            case HORA_ESPERA_HORA:
-            case HORA_ESPERA_MINUT:
-            {
-                screen::print_MOD_RELLOTGE(); break;
-            }
-            case ALARMA_ESPERA_HORA:
-            case ALARMA_ESPERA_MINUT:
-            {
-                screen::print_MOD_ALARMA(); break;
-            }
-            default:{/*Do nothing*/break;}
-        }
+        screen::print_MOD_CLOCKS();
     }
 
     //Imprimeix submenu de canvi d'hora o alarma per pantalla, Incrementa en 1 el valor actual si l'input és TIMER i
@@ -147,27 +133,38 @@ namespace menu
             }
             default:{/*Do nothing*/break;}
         }
-
-        switch(state)
-        {
-            case HORA_INCR_HORA:
-            case HORA_INCR_MINUT:
-            {
-                screen::print_MOD_RELLOTGE(); break;
-            }
-            case ALARMA_INCR_HORA:
-            case ALARMA_INCR_MINUT:
-            {
-                screen::print_MOD_ALARMA(); break;
-            }
-            default:{/*Do nothing*/break;}
-        }
+        screen::print_MOD_CLOCKS();
     }
 
-    //Funció inofensiva genèrica
-    void fun(void){
-        Serial.println(state);
-        buttons::input = buttons::RES;
+    //Desactiva els perifèrics, llegeig l'alarma per saber si cal tornar a aixecar-se passat un temps, i crida a sleeep::powerDown per...
+    ///...configurar l'sleep i entrar en ell.
+    void apagar(void)
+    {
+        //Desactivar perifèrics
+        bluetooth::turnOff();
+        screen::sleep();
+
+        uint32 max_sleep_time = 0;
+        //Si l'alarma està activada, calcular temps entre ara i l'alarma
+        if(clocks::alarm.on == true)
+        {
+            //Obtenim instant de temps actual i de l'alarma, en segons
+            uint32 actual = (uint32)clocks::time.hh*3600 + (uint32)clocks::time.mm*60 + (uint32)clocks::time.ss;
+            uint32 alarma = (uint32)clocks::alarm.hh*3600 + (uint32)clocks::alarm.mm*60;
+
+            //Calculem temps entre ara i la propera alarma, en segons, i li restem 3 segons. Així, timeMgr() activarà l'alarma sol.
+            if(actual <= alarma) //L'alarma està programada més endavant el mateix dia
+            {
+                max_sleep_time = alarma - actual;
+            }
+            else //L'alarma està programada per l'endemà. 86400 = 24h * 3600s en un hora
+            {
+                max_sleep_time = 86400 - actual + alarma; // equivalent a: 86400 - (actual-alarma)
+            }
+        }
+
+        //Configura sleep i posa a dormir
+        sleeep::powerDown(clocks::alarm.on, max_sleep_time);
     }
 
 } // namespace menu

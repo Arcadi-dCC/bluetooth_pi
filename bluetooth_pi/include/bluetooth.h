@@ -12,6 +12,7 @@ namespace bluetooth{
     uint8 init(void);
     void jamMgr(void);
     void readMgr(void);
+    void turnOff(void);
 
     enum Action{
 

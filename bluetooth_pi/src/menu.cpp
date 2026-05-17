@@ -3,6 +3,7 @@
 #include <buttons.h>
 #include <screen.h>
 #include <Arduino.h>
+#include <sleeep.h>
 
 namespace menu{
 
@@ -57,7 +58,7 @@ namespace menu{
         /* ALARMA_ESPERA_MINUT */       alarmIncSingle,
         /* ALARMA_INCR_MINUT */         alarmIncMult,
 
-        /* APAGAR */                    fun
+        /* APAGAR */                    apagar
     };
 
     //Initializes menu FSM

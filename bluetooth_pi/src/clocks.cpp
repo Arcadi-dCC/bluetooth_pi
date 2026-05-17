@@ -124,7 +124,6 @@ namespace clocks
                 screen::updateTime(); //...actualitza el temps per pantalla.
                 
                 //...i fa saltar l'alarma si està activada i és el moment.
-                //TODO: això no funciona si es posa l'aparell en mode sleep
                 if(alarm.on == true && time.hh == alarm.hh && time.mm == alarm.mm && bluetooth::action != bluetooth::JAMMING)
                 {
                     bluetooth::action = bluetooth::START_JAM;

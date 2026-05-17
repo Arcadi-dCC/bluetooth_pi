@@ -9,7 +9,7 @@
 #define BT_MOSI 35
 #define BT_SCLK 36
 
-#define BT_CE 38
+#define BT_CE 2
 
 #define BT_INITIAL_CH 45 //0 does not work
 

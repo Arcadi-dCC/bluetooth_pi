@@ -7,7 +7,8 @@
 #include <SPI.h>
 #include <TFT_eSPI.h>
 
-#define TFT_LED 5 //pin connectat a l'entrada "LED" que controla la retroil·luminació
+#define TFT_LED 8 //pin connectat a l'entrada "LED" que controla la retroil·luminació
+//La resta de pins estan definits a la llibreria TFT_eSPI, dins del document "User_Setups/Setup70b_ESP32_S3_ILI9341.h".
 
 #define FONT 4
 #define FONT_SIZE 1
@@ -32,7 +33,7 @@ namespace screen{
     void config(void){
 
         screen.init();
-        screen.setRotation(2); //Mode vertical. Per girar 180º, passar 0 per parametre.
+        screen.setRotation(0); //Mode vertical. Per girar 180º, passar 0 per parametre.
         screen.fillScreen(TFT_BLACK); //Pantalla en negre
         screen.setTextColor(TFT_WHITE); //Lletres en blanc
         screen.setTextFont(FONT);

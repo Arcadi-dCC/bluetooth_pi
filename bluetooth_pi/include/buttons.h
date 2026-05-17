@@ -3,8 +3,8 @@
 
 #include <platformTypes.h>
 
-#define L_BTN_PIN 21
-#define R_BTN_PIN 20
+#define L_BTN_PIN 19
+#define R_BTN_PIN 21
 
 #define SWITCH_OPTION_TIME 5e6 //us. Per a submenus de canvi d'hora i alarma
 #define TIME_BETWEEN_INCREMENT 250e3 //us. Per incrementar valors d'hora i alarma mantenint el botó esquerre apretat.

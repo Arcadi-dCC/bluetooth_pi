@@ -106,21 +106,7 @@ namespace menu
             }
         }
         buttons::input = buttons::RES;
-
-        switch(state)
-        {
-            case HORA_ESPERA_HORA:
-            case HORA_ESPERA_MINUT:
-            {
-                screen::print_MOD_RELLOTGE(); break;
-            }
-            case ALARMA_ESPERA_HORA:
-            case ALARMA_ESPERA_MINUT:
-            {
-                screen::print_MOD_ALARMA(); break;
-            }
-            default:{/*Do nothing*/break;}
-        }
+        screen::print_MOD_CLOCKS();
     }
 
     //Imprimeix submenu de canvi d'hora o alarma per pantalla, Incrementa en 1 el valor actual si l'input és TIMER i
@@ -147,21 +133,7 @@ namespace menu
             }
             default:{/*Do nothing*/break;}
         }
-
-        switch(state)
-        {
-            case HORA_INCR_HORA:
-            case HORA_INCR_MINUT:
-            {
-                screen::print_MOD_RELLOTGE(); break;
-            }
-            case ALARMA_INCR_HORA:
-            case ALARMA_INCR_MINUT:
-            {
-                screen::print_MOD_ALARMA(); break;
-            }
-            default:{/*Do nothing*/break;}
-        }
+        screen::print_MOD_CLOCKS();
     }
 
     //Desactiva els perifèrics, llegeig l'alarma per saber si cal tornar a aixecar-se passat un temps, i crida a sleeep::powerDown per...

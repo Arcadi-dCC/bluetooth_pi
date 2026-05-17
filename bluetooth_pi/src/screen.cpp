@@ -245,27 +245,51 @@ namespace screen{
         }
     }
 
-    //Imprimeix per pantalla el menu per canviar l'hora.
-    void print_MOD_RELLOTGE(void)
+    //Imprimeix per pantalla el menu per canviar l'hora o l'alarma.
+    void print_MOD_CLOCKS(void)
     {
-        pantalla = MOD_RELLOTGE;
-        screen.fillRect(MARGE, linia(0)-SUBMARGE, TFT_WIDTH, TFT_HEIGHT, TFT_BLACK); //neteja la zona de les opcions
-        screen.setCursor(MARGE, linia(0));
-        screen.printf("Hora:  %d", clocks::time.hh);
-        screen.setCursor(MARGE, linia(1));
-        screen.printf("Minut: %02d", clocks::time.mm);
-        cursor();
-    }
+        clocks::Alarm* printer = NULL;
+        
+        //Decideix si mostrar els valors del rellotge o l'alarma.
+        if(menu::state < menu::ALARMA_ESPERA_HORA) printer = &(clocks::time);
+        else printer = &(clocks::alarm);
 
-    //Imprimeix per pantalla el menu per canviar l'alarma.
-    void print_MOD_ALARMA(void)
-    {
-        pantalla = MOD_ALARMA;
-        screen.fillRect(MARGE, linia(0)-SUBMARGE, TFT_WIDTH, TFT_HEIGHT, TFT_BLACK); //neteja la zona de les opcions
-        screen.setCursor(MARGE, linia(0));
-        screen.printf("Hora:  %d", clocks::alarm.hh);
-        screen.setCursor(MARGE, linia(1));
-        screen.printf("Minut: %02d", clocks::alarm.mm);
+        if(pantalla != MOD_CLOCKS)
+        {
+            //Només s'executa això quan s'ha entrat a aquesta pantalla per primer cop
+            pantalla = MOD_CLOCKS;
+            screen.fillRect(MARGE, linia(0)-SUBMARGE, TFT_WIDTH, TFT_HEIGHT, TFT_BLACK); //neteja la zona de les opcions
+
+            screen.setCursor(MARGE, linia(0));
+            screen.printf("Hora: %d", printer->hh);
+            screen.setCursor(MARGE, linia(1));
+            screen.printf("Minut: %02d", printer->mm);
+        }
+        
+        //Actualitza per pantalla el valor modificat
+        switch(menu::state)
+        {
+            case menu::HORA_ESPERA_HORA:
+            case menu::HORA_INCR_HORA:
+            case menu::ALARMA_ESPERA_HORA:
+            case menu::ALARMA_INCR_HORA:
+            {
+                screen.fillRect(MARGE+67, linia(0), TFT_WIDTH, LIN_SEP, TFT_BLACK); //neteja la zona pel número de l'hora
+                screen.drawNumber(printer->hh, MARGE+67, linia(0));
+                break;
+            }
+            case menu::HORA_ESPERA_MINUT:
+            case menu::HORA_INCR_MINUT:
+            case menu::ALARMA_ESPERA_MINUT:
+            case menu::ALARMA_INCR_MINUT:
+            {
+                screen.fillRect(MARGE+75, linia(1), TFT_WIDTH, LIN_SEP, TFT_BLACK); //neteja la zona pel número del minut
+                screen.setCursor(MARGE + 75, linia(1));
+                screen.printf("%02d", printer->mm);
+                break;
+            }
+            default:{/*Do nothing*/break;}
+        }
         cursor();
     }
 
